@@ -1,20 +1,16 @@
-const express = require('express');
-const connectDB = require('./config/db');
+const http = require('http');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
+const connectDB = require('./config/db');
+const app = require('./app');
+
 connectDB();
 
-const app = express();
-
-app.use(express.json());
-
-app.get("/health", (req, res) => {
-    res.status(200).json({message: "Server is healthy"});
-});
-
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
