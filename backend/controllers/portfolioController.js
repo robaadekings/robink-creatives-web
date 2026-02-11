@@ -1,4 +1,4 @@
-const portifolio = require('../models/Portifolio');
+const portifolio = require('../models/Portfolio');
 const ApiError = require('../utils/ApiError');
 
 exports.createPortfolio = async (req, res, next) => {

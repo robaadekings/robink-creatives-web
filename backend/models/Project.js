@@ -2,24 +2,45 @@ const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema(
     {
-        client: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
-        title: String,
-        description: String,
-        services: [{type: mongoose.Schema.Types.ObjectId, ref: 'Service'}],
-        status: {
+        title: {
             type: String,
-            enum: ['planning', 'in-progress', 'review', 'completed', 'delivered'],
-            default: 'planning',
-            index: true
+            required: true,
+        },
+        clientName: String,
+        clientEmail: String,
+
+        quoteId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Quote',
         },
 
-        price: Number,
-        deadline: Date,
+        serviceId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Service',
+        },
+        description: String,
 
-        files: [String],
-        deliverables: [String]
+        budget: Number,
+        deadline: String,
 
+        status: {
+            type: String,
+            enum: [
+                'pending',
+                'in_progress',
+                'waiting_client',
+                'completed',
+                'cancelled',
+            ],
+            default: 'pending',
+           
+        },
 
-},{timestamps: true}
+        assets: [String],
+        deliverables: [String],
+
+            adminNotes: String,
+    },
+{timestamps: true}
 );
 module.exports = mongoose.model('Project', projectSchema);

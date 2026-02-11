@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const controller = require('../controllers/PortifolioController');
+const controller = require('../controllers/portfolioController');
 const validate = require('../middlewares/validateMiddleware');
 const auth = require('../middlewares/authMiddleware');
 const role = require('../middlewares/roleMiddleware');
@@ -10,7 +10,7 @@ const upload = require('../middlewares/uploadMiddleware');
 const {
   createPortfolioSchema,
   updatePortfolioSchema
-} = require('../validators/portifolioValidator');
+} = require('../validators/portfolioValidator');
 
 
 // ✅ GET ALL
