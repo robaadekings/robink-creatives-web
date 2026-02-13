@@ -2,6 +2,7 @@ const Invoice = require('../models/Invoice');
 const Project = require('../models/Project');
 const ApiError = require('../utils/ApiError');
 const generateInvoicePdf = require('../utils/invoicePdf');
+const {sendInvoiceEmail} = require("../services/invoiceEmailService")
 
 // Create a new invoice
 
@@ -119,3 +120,25 @@ exports.downloadInvoicePdf = async (req, res, next) => {
             
         }
     };
+exports.emailInvoice = async (req, res, next) => {
+  try {
+    const invoice = await Invoice.findById(req.params.id);
+
+    if (!invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Invoice not found"
+      });
+    }
+
+    await sendInvoiceEmail(invoice);
+
+    res.json({
+      success: true,
+      message: "Invoice email sent"
+    }); 
+
+  } catch (err) {
+    next(err);
+  }
+};
