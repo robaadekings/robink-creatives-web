@@ -1,6 +1,7 @@
 const Invoice = require('../models/Invoice');
 const Project = require('../models/Project');
 const ApiError = require('../utils/ApiError');
+const generateInvoicePdf = require('../utils/invoicePdf');
 
 // Create a new invoice
 
@@ -93,3 +94,28 @@ exports.deleteInvoice = async (req, res, next) => {
         next(err);
     }
 };
+
+//generate invoice pdf
+
+exports.downloadInvoicePdf = async (req, res, next) => {
+    try{
+        const invoice = await Invoice.findById(req.params.id);
+
+        if(!invoice){
+            return res.status(404).json({
+                success: false,
+                message: "Invoice not found"
+            });
+        }
+            res.setHeader(
+                "Content-Disposition",
+                ` attachment; filename=invoice-${invoice._id}.pdf`
+            );
+            res.setHeader("Content-Type", "application/pdf");
+
+            generateInvoicePdf(invoice, res);
+        } catch (err) {
+            next(err);
+            
+        }
+    };

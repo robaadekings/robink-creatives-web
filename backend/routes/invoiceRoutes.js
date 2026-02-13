@@ -13,5 +13,6 @@ router.get('/', auth, roles('admin'), controller.listInvoices);
 router.get('/:id', auth, roles('admin'), controller.getInvoice);
 router.put('/:id/status', auth, roles('admin'), controller.updateInvoiceStatus);
 router.delete('/:id', auth, roles('admin'), controller.deleteInvoice);
+router.get("/:id/pdf", auth, roles("admin"), controller.downloadInvoicePdf);
 
 module.exports = router;
