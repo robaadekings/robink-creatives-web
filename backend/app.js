@@ -10,6 +10,7 @@ const quoteRoutes = require('./routes/quoteRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 const clientInvoiceRoutes = require("./routes/clientInvoiceRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/quotes', quoteRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use("/api/client", clientInvoiceRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(errorMiddleware);
 
