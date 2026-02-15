@@ -5,7 +5,12 @@ const auth = require("../middlewares/authMiddleware");
 const role = require("../middlewares/roleMiddleware");
 
 const dashboard = require("../controllers/adminDashboardController");
+const notif = require("../controllers/adminNotificationController");
 
+
+// =====================
+// Dashboard Stats
+// =====================
 router.get(
   "/dashboard",
   auth,
@@ -13,10 +18,42 @@ router.get(
   dashboard.getDashboardStats
 );
 
+
+// =====================
+// Charts
+// =====================
 router.get(
-    "/invoice-status-chart",
-    auth,
-    role("admin"),
-    dashboard.getInvoiceStatusChart
+  "/invoice-status-chart",
+  auth,
+  role("admin"),
+  dashboard.getInvoiceStatusChart
 );
+
+
+
+// =====================
+// Notifications
+// =====================
+router.get(
+  "/notifications",
+  auth,
+  role("admin"),
+  notif.listNotifications
+);
+
+router.get(
+  "/notifications/unread-count",
+  auth,
+  role("admin"),
+  notif.unreadCount
+);
+
+router.patch(
+  "/notifications/:id/read",
+  auth,
+  role("admin"),
+  notif.markRead
+);
+
+
 module.exports = router;
