@@ -43,7 +43,7 @@ const invoiceSchema = new mongoose.Schema({
       "Paid",     
       "Overdue"
     ],
-    default: "Draft"
+    default: "pending"
   },
 
   // ===== Dates =====

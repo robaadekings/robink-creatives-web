@@ -13,4 +13,10 @@ router.get(
   dashboard.getDashboardStats
 );
 
+router.get(
+    "/invoice-status-chart",
+    auth,
+    role("admin"),
+    dashboard.getInvoiceStatusChart
+);
 module.exports = router;
