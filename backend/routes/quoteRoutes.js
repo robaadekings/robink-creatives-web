@@ -47,4 +47,11 @@ router.delete(
     controller.deleteQuote
 );
 
+//quote invoice conversion
+router.post(
+    "/:id/convert-to-invoice",
+    auth,
+    role("admin"),
+    controller.convertQuoteToInvoice  
+);
 module.exports = router;
