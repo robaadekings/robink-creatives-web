@@ -29,7 +29,12 @@ router.get(
   dashboard.getInvoiceStatusChart
 );
 
-
+router.get(
+  "/revenue-by-month",
+  auth,
+  role("admin"),
+  dashboard.getRevenueByMonth
+);
 
 // =====================
 // Notifications

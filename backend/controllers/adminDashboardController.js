@@ -83,3 +83,42 @@ exports.getInvoiceStatusChart = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getRevenueByMonth = async (req, res, next) => {
+  try {
+
+    const data = await Invoice.aggregate([
+      {
+        $match: { status: "paid" }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
+          total: { $sum: "$total" }
+        }
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1
+        }
+      }
+    ]);
+
+    const formatted = data.map(row => ({
+      month: `${row._id.year}-${String(row._id.month).padStart(2, "0")}`,
+      total: row.total
+    }));
+
+    res.json({
+      success: true,
+      data: formatted
+    });
+
+  } catch (err) {
+    next(err);
+  }
+};
