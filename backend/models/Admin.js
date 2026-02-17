@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const adminSchema = new mongoose.Schema(
   {
@@ -35,14 +36,19 @@ const adminSchema = new mongoose.Schema(
       default: true
     },
 
-    lastLogin: Date
+    lastLogin: Date,
+
+    // ✅ Password reset support
+    passwordResetToken: String,
+    passwordResetExpires: Date
   },
   { timestamps: true }
 );
 
 
-
-// ✅ Password Hash Before Save
+/* =========================
+   Hash Password Before Save
+========================= */
 
 adminSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -54,13 +60,34 @@ adminSchema.pre("save", async function (next) {
 });
 
 
-
-// ✅ Password Compare Method
+/* =========================
+   Compare Password Method
+========================= */
 
 adminSchema.methods.comparePassword = async function (candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
 
-module.exports = mongoose.model("Admin", adminSchema);
+/* =========================
+   Create Reset Token Method
+========================= */
 
+adminSchema.methods.createPasswordResetToken = function () {
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  // store hashed token in DB
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // expires in 30 minutes
+  this.passwordResetExpires = Date.now() + 30 * 60 * 1000;
+
+  return resetToken; // send raw token via email
+};
+
+
+module.exports = mongoose.model("Admin", adminSchema);

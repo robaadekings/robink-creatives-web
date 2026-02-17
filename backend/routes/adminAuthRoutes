@@ -13,6 +13,9 @@ router.post("/login", adminAuthController.loginAdmin);
 // Admin Register (optional — remove later)
 // ==============================
 router.post("/register", adminAuthController.registerAdmin);
+router.post("/forgot-password", adminAuthController.forgotPassword);
+router.post("/reset-password/:token", adminAuthController.resetPassword);
+
 
 
 module.exports = router;
