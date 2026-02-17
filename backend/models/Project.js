@@ -10,7 +10,7 @@ const projectSchema = new mongoose.Schema(
     clientName: String,
     clientEmail: String,
 
-    // ✅ Step 4 required field name
+    // ✅ quote → project conversion reference
     sourceQuote: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Quote',
@@ -42,6 +42,12 @@ const projectSchema = new mongoose.Schema(
     deliverables: [String],
 
     adminNotes: String,
+
+    // ✅ Client Portal Security Step 1
+    clientPortalToken: {
+        type: String,
+        index: true
+    },
 },
 { timestamps: true }
 );

@@ -1,12 +1,16 @@
 const Project = require('../models/Project');
 const Quote = require('../models/Quote');
 const ApiError = require('../utils/ApiError');
+const crypto = require("crypto");
+
 
 // Admin create project
 
 exports.createProject = async (req, res, next) => {
     try {
         const data = req.body;
+
+        const portalToken = crypto.randomBytes(24).toString("hex");
 
         //attach uploaded assets
 
