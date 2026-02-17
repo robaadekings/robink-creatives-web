@@ -1,20 +1,26 @@
-module.exports = function role(requiredRole) {
+const ApiError = require("../utils/ApiError");
+
+module.exports = function roleMiddleware(...allowedRoles) {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: "Not authenticated"
-      });
+
+    // -------------------------
+    // Check authentication first
+    // -------------------------
+    if (!req.admin) {
+      return next(new ApiError(401, "Not authenticated"));
     }
 
-    if (req.user.role !== requiredRole) {
-      return res.status(403).json({
-        success: false,
-        message: "Forbidden — insufficient permissions"
-      });
+    // -------------------------
+    // Check role permission
+    // -------------------------
+    if (!allowedRoles.includes(req.admin.role)) {
+      return next(
+        new ApiError(403, "Forbidden — insufficient permissions")
+      );
     }
 
     next();
   };
 };
+
 
