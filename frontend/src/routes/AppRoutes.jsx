@@ -1,18 +1,38 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom"
+import { Routes, Route, useLocation } from "react-router-dom"
+import { AnimatePresence, motion } from "framer-motion"
 import PublicLayout from "../layouts/PublicLayout"
 import Landing from "../pages/public/Landing"
 
 export default function AppRoutes() {
-    return(
-        <BrowserRouter>
+  const location = useLocation()
 
-        <Routes>
-            <Route path="/" element={<PublicLayout />}>
-            <Route index element={<Landing />}>
-            </Route>
-        
-            </Route>
-        </Routes>
-        </BrowserRouter>
-    )
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route element={<PublicLayout />}>
+          <Route
+            path="/"
+            element={
+              <PageWrapper>
+                <Landing />
+              </PageWrapper>
+            }
+          />
+        </Route>
+      </Routes>
+    </AnimatePresence>
+  )
+}
+
+function PageWrapper({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
+    >
+      {children}
+    </motion.div>
+  )
 }
