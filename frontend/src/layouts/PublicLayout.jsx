@@ -179,7 +179,7 @@ export default function PublicLayout() {
           <div>
             <h4 className="font-semibold mb-5 text-white">Contact</h4>
             <p className="text-gray-400 text-sm">info@robinkcreatives.com</p>
-            <p className="text-gray-400 text-sm mt-3">+254 700 000 000</p>
+            <p className="text-gray-400 text-sm mt-3">+254 769 505 060</p>
           </div>
         </div>
 

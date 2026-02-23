@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import { useEffect, useState } from "react"
-import heroImage from "../../assets/robink-logo.png"
+import heroTechImage from "../../assets/hero-tech.jpeg" // replace with your real tech image
 
 export default function Landing() {
   const { scrollYProgress } = useScroll()
@@ -120,20 +120,37 @@ export default function Landing() {
             </div>
           </motion.div>
 
-          {/* HERO IMAGE 3D STYLE */}
+          {/* HERO IMAGE WITH ANIMATED GRADIENT BORDER */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.85, rotate: -4 }}
-            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 1 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="relative"
+            className="relative flex justify-center"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-yellow-500/20 blur-3xl rounded-3xl" />
-            <img
-              src={heroImage}
-              alt="Robink Creatives"
-              className="relative rounded-3xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7)] border border-white/10"
-            />
+            <div className="relative p-[3px] rounded-3xl overflow-hidden">
+
+              {/* Rotating Gradient Border */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
+                className="absolute inset-0 bg-gradient-to-r from-red-500 via-yellow-400 to-red-500"
+                style={{ backgroundSize: "200% 200%" }}
+              />
+
+              {/* Card Content */}
+              <div className="relative bg-[#0f141c] rounded-3xl overflow-hidden">
+                <motion.img
+                  src={heroTechImage}
+                  alt="Tech Showcase"
+                  className="w-full max-w-lg h-[420px] object-cover object-center"
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  loading="lazy"
+                />
+              </div>
+
+            </div>
           </motion.div>
 
         </div>
@@ -159,63 +176,23 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-xl"
+              className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-xl"
             >
-              <div className="h-48 bg-gradient-to-br from-red-600/20 to-yellow-500/20 rounded-xl mb-6" />
-              <h3 className="text-xl font-semibold">Enterprise Web Platform</h3>
+              <div className="h-48 rounded-xl mb-6 bg-gradient-to-br from-red-600/10 to-yellow-500/10 flex items-center justify-center text-gray-500 text-sm">
+                Project Image (From Backend)
+              </div>
+
+              <h3 className="text-xl font-semibold">Project Title</h3>
               <p className="text-gray-400 mt-3 text-sm">
-                High-performance scalable solution built with modern architecture.
+                This will dynamically load from your backend (Cloudinary).
               </p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* ================= WHY CHOOSE ================= */}
-      <section className="py-28 px-6 bg-[#1B2029]">
-        <motion.h2
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-3xl font-bold mb-16 text-center"
-        >
-          Why Choose Robink
-        </motion.h2>
-
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
-          {[
-            {
-              title: "Engineering Excellence",
-              desc: "We build scalable, maintainable, and secure digital ecosystems.",
-            },
-            {
-              title: "Premium UI Systems",
-              desc: "Every interface is meticulously crafted for clarity and impact.",
-            },
-            {
-              title: "Growth-Driven Strategy",
-              desc: "Technology aligned with business performance and ROI.",
-            },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              whileHover={{ scale: 1.05 }}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-white/5 backdrop-blur-xl p-8 rounded-2xl border border-white/10"
-            >
-              <h3 className="text-xl font-semibold mb-4">{item.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                {item.desc}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ================= STATS WITH ANIMATION ================= */}
-      <section className="py-24 bg-[#151922]">
+      {/* ================= STATS ================= */}
+      <section className="py-24 bg-[#1B2029]">
         <div className="max-w-6xl mx-auto grid md:grid-cols-4 text-center gap-10">
           <div>
             <h3 className="text-4xl font-bold text-red-500">
@@ -243,7 +220,7 @@ export default function Landing() {
       </section>
 
       {/* ================= TESTIMONIALS ================= */}
-      <section className="py-28 px-6 bg-[#1B2029] text-center">
+      <section className="py-28 px-6 bg-[#151922] text-center">
         <h2 className="text-3xl font-bold mb-16">What Clients Say</h2>
 
         <motion.div
