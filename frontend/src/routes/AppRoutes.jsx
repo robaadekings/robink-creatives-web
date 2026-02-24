@@ -1,7 +1,9 @@
 import { Routes, Route, useLocation } from "react-router-dom"
 import { AnimatePresence, motion } from "framer-motion"
+
 import PublicLayout from "../layouts/PublicLayout"
 import Landing from "../pages/public/Landing"
+import Services from "../pages/public/Services"
 
 export default function AppRoutes() {
   const location = useLocation()
@@ -10,6 +12,7 @@ export default function AppRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route element={<PublicLayout />}>
+
           <Route
             path="/"
             element={
@@ -18,6 +21,16 @@ export default function AppRoutes() {
               </PageWrapper>
             }
           />
+
+          <Route
+            path="/services"
+            element={
+              <PageWrapper>
+                <Services />
+              </PageWrapper>
+            }
+          />
+
         </Route>
       </Routes>
     </AnimatePresence>

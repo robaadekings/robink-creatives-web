@@ -50,17 +50,14 @@ exports.deleteService = async (req, res, next) => {
     }
 };
 
-exports.listServices = async (req, res, next) => {
-    try{
-        const { category} = req.query;
-        const filter = { active: true };
-        if (category) filter.category = category;
-        const services = await Service.find(filter).sort({createdAt: -1});
-        res.status(200).json({
-            success: true,
-            data: services
-        });
-    }catch (error) {
-        next(error);
-    }
+exports.listServices = async (req, res) => {
+  try {
+    const services = await Service.find()
+      .populate("category", "name slug")
+      .sort({ createdAt: -1 });
+
+    res.json(services);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch services" });
+  }
 };

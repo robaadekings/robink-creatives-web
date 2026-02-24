@@ -5,10 +5,10 @@ const serviceSchema = new mongoose.Schema(
         title: {type: String, required: true},
 
         category: {
-            type: String,
-            enum: ["graphic design", "web development"],
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "ServiceCategory",
             required: true,
-            index: true
+
 
         },
         description: {type: String},
