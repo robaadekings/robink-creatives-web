@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import PublicLayout from "../layouts/PublicLayout"
 import Landing from "../pages/public/Landing"
 import Services from "../pages/public/Services"
+import Portfolio from "../pages/public/Portfolio"
 
 export default function AppRoutes() {
   const location = useLocation()
@@ -30,7 +31,15 @@ export default function AppRoutes() {
               </PageWrapper>
             }
           />
-
+          <Route
+  path="portfolio"
+  element={
+    <PageWrapper>
+      <Portfolio />
+    </PageWrapper>
+  }
+/>
+        
         </Route>
       </Routes>
     </AnimatePresence>
