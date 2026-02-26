@@ -11,10 +11,16 @@ const itemSchema = new mongoose.Schema({
 
 const invoiceSchema = new mongoose.Schema({
 
-  // ===== Core =====
   projectId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Project",
+    required: true
+  },
+
+  // 🔥 NEW RELATION
+  client: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true
   },
 
@@ -35,23 +41,15 @@ const invoiceSchema = new mongoose.Schema({
 
   currency: { type: String, default: "KSH" },
 
-  // ===== Status =====
   status: {
     type: String,
-    enum: [
-      "Pending",
-      "Paid",     
-      "Overdue"
-    ],
-    default: "pending"
+    enum: ["Pending", "Paid", "Overdue"],
+    default: "Pending"
   },
 
-  // ===== Dates =====
   issueDate: Date,
   dueDate: Date,
   paidDate: Date,
-
-  // ===== Portal Support =====
 
   portalToken: {
     type: String,
@@ -60,13 +58,8 @@ const invoiceSchema = new mongoose.Schema({
   },
 
   lastViewedAt: Date,
-
-  // ===== Email Tracking =====
-
   emailSentAt: Date,
   emailMessageId: String,
-
-  // ===== Extras =====
 
   notes: String,
   terms: String,
@@ -75,18 +68,12 @@ const invoiceSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 
-// =============================
-// AUTO FIELDS
-// =============================
-
 invoiceSchema.pre("save", function(next) {
 
-  // invoice number generator
   if (!this.invoiceNumber) {
     this.invoiceNumber = "INV-" + Date.now();
   }
 
-  // secure client portal token
   if (!this.portalToken) {
     this.portalToken = crypto.randomBytes(24).toString("hex");
   }
@@ -95,5 +82,3 @@ invoiceSchema.pre("save", function(next) {
 });
 
 module.exports = mongoose.model("Invoice", invoiceSchema);
-
- 

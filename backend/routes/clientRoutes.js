@@ -1,17 +1,21 @@
 const express = require('express');
 const router = express.Router();
+
+const auth = require("../middlewares/authMiddleware");
+const role = require("../middlewares/roleMiddleware");
+
 const client = require('../controllers/clientController');
 
-// projects
-router.get('/projects/:email', client.getClientProjects);
-router.get('/project/:id', client.getClientProject);
+// 🔐 Projects
+router.get('/projects', auth, role("client"), client.getClientProjects);
+router.get('/project/:id', auth, role("client"), client.getClientProject);
 
-// invoices
-router.get('/invoices/:email', client.getClientInvoices);
-router.get('/invoice/:id', client.getClientInvoice);
-router.get('/invoice/:id/pdf', client.downloadClientInvoicePdf);
+// 🔐 Invoices
+router.get('/invoices', auth, role("client"), client.getClientInvoices);
+router.get('/invoice/:id', auth, role("client"), client.getClientInvoice);
+router.get('/invoice/:id/pdf', auth, role("client"), client.downloadClientInvoicePdf);
 
-// quotes
-router.get('/quotes/:email', client.getClientQuotes);
+// 🔐 Quotes
+router.get('/quotes', auth, role("client"), client.getClientQuotes);
 
 module.exports = router;

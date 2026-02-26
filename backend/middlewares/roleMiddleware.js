@@ -6,14 +6,14 @@ module.exports = function roleMiddleware(...allowedRoles) {
     // -------------------------
     // Check authentication first
     // -------------------------
-    if (!req.admin) {
+    if (!req.user) {
       return next(new ApiError(401, "Not authenticated"));
     }
 
     // -------------------------
     // Check role permission
     // -------------------------
-    if (!allowedRoles.includes(req.admin.role)) {
+    if (!allowedRoles.includes(req.user.role)) {
       return next(
         new ApiError(403, "Forbidden — insufficient permissions")
       );

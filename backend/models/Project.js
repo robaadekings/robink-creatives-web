@@ -7,10 +7,17 @@ const projectSchema = new mongoose.Schema(
         required: true,
     },
 
+    // 🔥 NEW — Proper Relation
+    client: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+
+    // Keep for compatibility (PDF / emails)
     clientName: String,
     clientEmail: String,
 
-    // ✅ quote → project conversion reference
     sourceQuote: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Quote',
@@ -22,7 +29,6 @@ const projectSchema = new mongoose.Schema(
     },
 
     description: String,
-
     budget: Number,
     deadline: String,
 
@@ -40,10 +46,8 @@ const projectSchema = new mongoose.Schema(
 
     assets: [String],
     deliverables: [String],
-
     adminNotes: String,
 
-    // ✅ Client Portal Security Step 1
     clientPortalToken: {
         type: String,
         index: true

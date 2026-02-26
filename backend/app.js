@@ -12,8 +12,6 @@ const invoiceRoutes = require('./routes/invoiceRoutes');
 const clientInvoiceRoutes = require("./routes/clientInvoiceRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const clientRoutes = require('./routes/clientRoutes');
-const adminAuthRoutes = require("./routes/adminAuthRoutes");
-const clientAuthRoutes = require("./routes/clientAuthRoutes");
 const serviceCategoryRoutes= require("./routes/serviceCategoryRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 
@@ -38,8 +36,6 @@ app.use('/api/invoices', invoiceRoutes);
 app.use("/api/client", clientInvoiceRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/client', clientRoutes);
-app.use("/api/admin/auth", adminAuthRoutes);
-app.use("/api/client-auth", clientAuthRoutes);
 app.use('/api/service-categories', serviceCategoryRoutes);
 app.use("/api/contact", contactRoutes);
 

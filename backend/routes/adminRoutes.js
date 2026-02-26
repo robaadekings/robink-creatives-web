@@ -6,6 +6,8 @@ const role = require("../middlewares/roleMiddleware");
 
 const dashboard = require("../controllers/adminDashboardController");
 const notif = require("../controllers/adminNotificationController");
+const adminController = require("../controllers/adminController");
+
 
 
 // =====================
@@ -58,6 +60,13 @@ router.patch(
   auth,
   role("admin"),
   notif.markRead
+);
+
+router.patch(
+  "/users/:id/promote",
+  auth,
+  role("admin"),
+  adminController.promoteToAdmin
 );
 
 

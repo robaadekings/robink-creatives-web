@@ -10,13 +10,11 @@ const generateInvoicePdf = require('../utils/invoicePdf');
 // ===============================
 exports.getClientProjects = async (req, res, next) => {
   try {
-
     const projects = await Project.find({
-      clientEmail: req.params.email
+      client: req.user._id
     }).sort({ createdAt: -1 });
 
     res.json({ success: true, data: projects });
-
   } catch (err) {
     next(err);
   }
@@ -30,7 +28,10 @@ exports.getClientProject = async (req, res, next) => {
   try {
 
     const project = await Project
-      .findById(req.params.id)
+      .findOne({
+        _id: req.params.id,
+        client: req.user._id
+      })
       .populate('serviceId', 'title category');
 
     if (!project) throw new ApiError(404, "Project not found");
@@ -50,7 +51,7 @@ exports.getClientInvoices = async (req, res, next) => {
   try {
 
     const invoices = await Invoice.find({
-      clientEmail: req.params.email
+      client: req.user._id
     }).sort({ createdAt: -1 });
 
     res.json({ success: true, data: invoices });
@@ -67,7 +68,10 @@ exports.getClientInvoices = async (req, res, next) => {
 exports.getClientInvoice = async (req, res, next) => {
   try {
 
-    const invoice = await Invoice.findById(req.params.id);
+    const invoice = await Invoice.findOne({
+      _id: req.params.id,
+      client: req.user._id
+    });
 
     if (!invoice) throw new ApiError(404, "Invoice not found");
 
@@ -86,7 +90,7 @@ exports.getClientQuotes = async (req, res, next) => {
   try {
 
     const quotes = await Quote.find({
-      clientEmail: req.params.email
+      clientEmail: req.user.email
     }).sort({ createdAt: -1 });
 
     res.json({ success: true, data: quotes });
@@ -103,7 +107,10 @@ exports.getClientQuotes = async (req, res, next) => {
 exports.downloadClientInvoicePdf = async (req, res, next) => {
   try {
 
-    const invoice = await Invoice.findById(req.params.id);
+    const invoice = await Invoice.findOne({
+      _id: req.params.id,
+      client: req.user._id
+    });
 
     if (!invoice) throw new ApiError(404, "Invoice not found");
 
