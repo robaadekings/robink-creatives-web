@@ -13,8 +13,9 @@ const clientInvoiceRoutes = require("./routes/clientInvoiceRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const clientRoutes = require('./routes/clientRoutes');
 const adminAuthRoutes = require("./routes/adminAuthRoutes");
-const clientAuthRoutes = require("./routes/clientAuthRoutes")
-const serviceCategoryRoutes= require("./routes/serviceCategoryRoutes")
+const clientAuthRoutes = require("./routes/clientAuthRoutes");
+const serviceCategoryRoutes= require("./routes/serviceCategoryRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use('/api/client', clientRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/client-auth", clientAuthRoutes);
 app.use('/api/service-categories', serviceCategoryRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.use(errorMiddleware);
 

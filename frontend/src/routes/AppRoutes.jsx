@@ -5,6 +5,7 @@ import PublicLayout from "../layouts/PublicLayout"
 import Landing from "../pages/public/Landing"
 import Services from "../pages/public/Services"
 import Portfolio from "../pages/public/Portfolio"
+import Contact from "../pages/public/Contact"
 
 export default function AppRoutes() {
   const location = useLocation()
@@ -36,6 +37,14 @@ export default function AppRoutes() {
   element={
     <PageWrapper>
       <Portfolio />
+    </PageWrapper>
+  }
+/>
+<Route
+  path="/contact"
+  element={
+    <PageWrapper>
+      <Contact />
     </PageWrapper>
   }
 />
