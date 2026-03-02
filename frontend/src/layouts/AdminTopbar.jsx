@@ -1,5 +1,5 @@
 import { Menu, LogOut } from "lucide-react"
-import { useAuth } from "../../../context/AuthContext"
+import { useAuth } from "../context/AuthContext"
 
 export default function AdminTopbar({ toggleSidebar }) {
   const { user, logout } = useAuth()

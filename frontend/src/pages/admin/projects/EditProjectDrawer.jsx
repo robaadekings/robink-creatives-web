@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import api from "../../../lib/axios"
+import api from "../../../utils/axios"
 
 export default function EditProjectDrawer({ open, onClose, project, clients, refresh }) {
   const [form, setForm] = useState({})

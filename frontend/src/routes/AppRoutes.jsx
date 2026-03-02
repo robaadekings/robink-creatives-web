@@ -22,6 +22,11 @@ import AdminSettings from "../pages/admin/AdminSettings"
 import ProjectDetail from "../pages/admin/ProjectDetail"
 
 import ClientDashboard from "../pages/client/Dashboard"
+import ClientProjects from "../pages/client/Project"
+import ClientProjectDetail from "../pages/client/ProjectDetail"
+import ClientInvoices from "../pages/client/Invoice"
+import ClientFiles from "../pages/client/Files"
+import ClientMessages from "../pages/client/Message"
 
 import ProtectedRoute from "./ProtectedRoute"
 
@@ -32,7 +37,7 @@ export default function AppRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
 
-        {/* PUBLIC */}
+        {/* ================= PUBLIC ================= */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<PageWrapper><Landing /></PageWrapper>} />
           <Route path="/services" element={<PageWrapper><Services /></PageWrapper>} />
@@ -40,11 +45,11 @@ export default function AppRoutes() {
           <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
         </Route>
 
-        {/* AUTH */}
+        {/* ================= AUTH ================= */}
         <Route path="/portal/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/portal/register" element={<PageWrapper><Register /></PageWrapper>} />
 
-        {/* ADMIN */}
+        {/* ================= ADMIN ================= */}
         <Route
           path="/admin"
           element={
@@ -62,10 +67,9 @@ export default function AppRoutes() {
           <Route path="invoices" element={<PageWrapper><AdminInvoices /></PageWrapper>} />
           <Route path="quotes" element={<PageWrapper><AdminQuotes /></PageWrapper>} />
           <Route path="settings" element={<PageWrapper><AdminSettings /></PageWrapper>} />
-
         </Route>
 
-        {/* CLIENT */}
+        {/* ================= CLIENT ================= */}
         <Route
           path="/client"
           element={
@@ -75,7 +79,13 @@ export default function AppRoutes() {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
+
           <Route path="dashboard" element={<PageWrapper><ClientDashboard /></PageWrapper>} />
+          <Route path="projects" element={<PageWrapper><ClientProjects /></PageWrapper>} />
+          <Route path="projects/:id" element={<PageWrapper><ClientProjectDetail /></PageWrapper>} />
+          <Route path="invoices" element={<PageWrapper><ClientInvoices /></PageWrapper>} />
+          <Route path="files" element={<PageWrapper><ClientFiles /></PageWrapper>} />
+          <Route path="messages" element={<PageWrapper><ClientMessages /></PageWrapper>} />
         </Route>
 
       </Routes>

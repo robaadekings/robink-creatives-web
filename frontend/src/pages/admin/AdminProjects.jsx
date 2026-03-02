@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Plus, Search, Pencil, Trash2, Eye } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import api from "../../lib/axios"
+import api from "../../utils/axios"
 
 import CreateProjectModal from "./projects/CreateProjectModal"
 import EditProjectDrawer from "./projects/EditProjectDrawer"

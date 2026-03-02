@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import api from "../../lib/axios"
+import api from "../../utils/axios"
 
 export default function AdminQuotes() {
   const [quotes, setQuotes] = useState([])
