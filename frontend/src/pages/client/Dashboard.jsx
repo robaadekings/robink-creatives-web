@@ -5,7 +5,7 @@ export default function ClientDashboard() {
   const [stats, setStats] = useState(null)
 
   useEffect(() => {
-    api.get("/client/dashboard").then(res => setStats(res.data))
+    api.get("/client/dashboard").then(res => setStats(res.data.data))
   }, [])
 
   if (!stats) return <div>Loading...</div>

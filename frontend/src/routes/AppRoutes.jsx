@@ -9,6 +9,7 @@ import Contact from "../pages/public/Contact"
 
 import Login from "../pages/portal/Login"
 import Register from "../pages/portal/Register"
+import ForgotPassword from "../pages/portal/ForgotPassword"
 
 import AdminLayout from "../layouts/AdminLayout"
 import ClientLayout from "../layouts/ClientLayout"
@@ -48,6 +49,7 @@ export default function AppRoutes() {
         {/* ================= AUTH ================= */}
         <Route path="/portal/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/portal/register" element={<PageWrapper><Register /></PageWrapper>} />
+        <Route path="/portal/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
 
         {/* ================= ADMIN ================= */}
         <Route
@@ -83,9 +85,9 @@ export default function AppRoutes() {
           <Route path="dashboard" element={<PageWrapper><ClientDashboard /></PageWrapper>} />
           <Route path="projects" element={<PageWrapper><ClientProjects /></PageWrapper>} />
           <Route path="projects/:id" element={<PageWrapper><ClientProjectDetail /></PageWrapper>} />
+          <Route path="projects/:projectId/messages" element={<PageWrapper><ClientMessages /></PageWrapper>} />
           <Route path="invoices" element={<PageWrapper><ClientInvoices /></PageWrapper>} />
           <Route path="files" element={<PageWrapper><ClientFiles /></PageWrapper>} />
-          <Route path="messages" element={<PageWrapper><ClientMessages /></PageWrapper>} />
         </Route>
 
       </Routes>

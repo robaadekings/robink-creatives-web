@@ -98,6 +98,13 @@ export default function Login() {
             {loading ? "Signing In..." : "Sign In"}
           </button>
 
+          <Link
+            to="/portal/forgot-password"
+            className="text-red-400 hover:underline text-sm text-center block mt-3"
+          >
+            Forgot Password?
+          </Link>
+
         </form>
 
         <p className="text-gray-400 text-sm text-center mt-6">

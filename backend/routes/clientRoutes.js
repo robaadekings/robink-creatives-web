@@ -6,6 +6,9 @@ const role = require("../middlewares/roleMiddleware");
 
 const client = require('../controllers/clientController');
 
+// 🔐 Dashboard
+router.get('/dashboard', auth, role("client"), client.getDashboardStats);
+
 // 🔐 Projects
 router.get('/projects', auth, role("client"), client.getClientProjects);
 router.get('/project/:id', auth, role("client"), client.getClientProject);
@@ -17,5 +20,12 @@ router.get('/invoice/:id/pdf', auth, role("client"), client.downloadClientInvoic
 
 // 🔐 Quotes
 router.get('/quotes', auth, role("client"), client.getClientQuotes);
+
+// 🔐 Files
+router.get('/files', auth, role("client"), client.getClientFiles);
+
+// 🔐 Messages
+router.get('/project/:projectId/messages', auth, role("client"), client.getProjectMessages);
+router.post('/project/:projectId/messages', auth, role("client"), client.sendProjectMessage);
 
 module.exports = router;

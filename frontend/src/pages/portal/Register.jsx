@@ -3,9 +3,11 @@ import { useNavigate, Link } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Loader2 } from "lucide-react"
 import api from "../../utils/axios"
+import { useAuth } from "../../context/AuthContext"
 
 export default function Register() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const [form, setForm] = useState({
     name: "",
@@ -26,8 +28,9 @@ export default function Register() {
     setError("")
 
     try {
-      await api.post("/auth/register", form)
-      navigate("/portal/login")
+      const { data } = await api.post("/auth/register", form)
+      login(data.token, data.user)
+      navigate("/client/dashboard")
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed")
     } finally {

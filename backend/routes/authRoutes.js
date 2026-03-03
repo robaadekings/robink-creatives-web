@@ -10,5 +10,7 @@ const{ registerSchema,
 router.post('/register', validate(registerSchema), controller.register);
 router.post('/login', validate(loginSchema), controller.login);
 router.get('/me', authMiddleware, controller.getMe);
+router.post('/forgot-password', controller.forgotPassword);
+router.post('/reset-password/:token', controller.resetPassword);
 
 module.exports = router;
