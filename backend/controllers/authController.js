@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const User = require("../models/User");
 const ApiError = require("../utils/ApiError");
@@ -19,19 +18,32 @@ function generateToken(user) {
 }
 
 // ==============================
-// Register (Admin can create clients)
+// Register (Public = Client Only)
 // ==============================
 exports.register = async (req, res, next) => {
   try {
+    const { name, email, password } = req.body;
 
-    const exists = await User.findOne({ email: req.body.email });
-    if (exists) throw new ApiError(400, "User already exists");
+    if (!name || !email || !password) {
+      throw new ApiError(400, "Name, email and password are required");
+    }
 
-    const user = await User.create(req.body);
+    const exists = await User.findOne({ email });
+    if (exists) {
+      throw new ApiError(400, "User already exists");
+    }
+
+    // 🔥 Always force role to client (security protection)
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: "client"
+    });
 
     res.status(201).json({
       success: true,
-      data: user
+      message: "Client registered successfully"
     });
 
   } catch (err) {
@@ -40,17 +52,17 @@ exports.register = async (req, res, next) => {
 };
 
 // ==============================
-// Login (Works for Admin & Client)
+// Login (Admin + Client)
 // ==============================
 exports.login = async (req, res, next) => {
   try {
-
     const { email, password } = req.body;
 
-    const user = await User
-      .findOne({ email })
-      .select("+password");
+    if (!email || !password) {
+      throw new ApiError(400, "Email and password are required");
+    }
 
+    const user = await User.findOne({ email }).select("+password");
     if (!user) throw new ApiError(401, "Invalid credentials");
 
     const match = await user.comparePassword(password);
@@ -82,7 +94,6 @@ exports.login = async (req, res, next) => {
 // ==============================
 exports.forgotPassword = async (req, res, next) => {
   try {
-
     const user = await User.findOne({ email: req.body.email });
     if (!user) throw new ApiError(404, "User not found");
 
@@ -105,7 +116,6 @@ exports.forgotPassword = async (req, res, next) => {
 // ==============================
 exports.resetPassword = async (req, res, next) => {
   try {
-
     const hashed = crypto
       .createHash("sha256")
       .update(req.params.token)
@@ -139,7 +149,6 @@ exports.resetPassword = async (req, res, next) => {
 // ==============================
 exports.getMe = async (req, res, next) => {
   try {
-
     const user = await User.findById(req.user.id);
 
     res.json({

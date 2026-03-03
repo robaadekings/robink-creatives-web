@@ -30,18 +30,46 @@ exports.getDashboardStats = async (req, res, next) => {
       .limit(5)
       .select("clientName total status createdAt");
 
+    // Get revenue chart data
+    const revenueChartData = await Invoice.aggregate([
+      {
+        $match: { status: "paid" }
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
+          total: { $sum: "$total" }
+        }
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1
+        }
+      }
+    ]);
+
+    const revenueChart = revenueChartData.map(row => ({
+      month: `${row._id.year}-${String(row._id.month).padStart(2, "0")}`,
+      total: row.total
+    }));
+
     res.json({
       success: true,
-      data: {
+      stats: {
         revenueTotal,
         invoicesPending,
         invoicesPaid,
         quotesOpen,
         projectsActive,
         servicesCount,
-        portfolioCount,
-        recentInvoices
-      }
+        portfolioCount
+      },
+      recentInvoices,
+      revenueChart
     });
 
   } catch (err) {

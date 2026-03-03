@@ -28,11 +28,11 @@ export default function AdminDashboard() {
 
   const fetchDashboard = async () => {
     try {
-      const { data } = await api.get("/admin/dashboard")
+      const response = await api.get("/admin/dashboard")
 
-      setStats(data.stats)
-      setChartData(data.revenueChart)
-      setRecentInvoices(data.recentInvoices)
+      setStats(response.data.stats)
+      setChartData(response.data.revenueChart)
+      setRecentInvoices(response.data.recentInvoices)
 
     } catch (error) {
       console.error("Dashboard error:", error)

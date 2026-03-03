@@ -16,7 +16,7 @@ const adminController = require("../controllers/adminController");
 router.get(
   "/dashboard",
   auth,
-  role("admin"),
+  role("admin", "superadmin"),
   dashboard.getDashboardStats
 );
 
@@ -27,14 +27,14 @@ router.get(
 router.get(
   "/invoice-status-chart",
   auth,
-  role("admin"),
+  role("admin", "superadmin"),
   dashboard.getInvoiceStatusChart
 );
 
 router.get(
   "/revenue-by-month",
   auth,
-  role("admin"),
+  role("admin", "superadmin"),
   dashboard.getRevenueByMonth
 );
 
@@ -44,28 +44,28 @@ router.get(
 router.get(
   "/notifications",
   auth,
-  role("admin"),
+  role("admin", "superadmin"),
   notif.listNotifications
 );
 
 router.get(
   "/notifications/unread-count",
   auth,
-  role("admin"),
+  role("admin", "superadmin"),
   notif.unreadCount
 );
 
 router.patch(
   "/notifications/:id/read",
   auth,
-  role("admin"),
+  role("admin", "superadmin"),
   notif.markRead
 );
 
 router.patch(
   "/users/:id/promote",
   auth,
-  role("admin"),
+  role("admin", "superadmin"),
   adminController.promoteToAdmin
 );
 
