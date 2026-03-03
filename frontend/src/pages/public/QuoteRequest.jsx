@@ -1,15 +1,18 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Loader2, Mail, MapPin, Phone, Send } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import api from "../../utils/axios"
 
-export default function Contact() {
+export default function QuoteRequest() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    subject: "",
-    message: "",
+    serviceCategory: "",
+    description: "",
+    budgetRange: "",
+    deadline: "",
   })
+  const [files, setFiles] = useState([])
 
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -22,6 +25,10 @@ export default function Contact() {
     })
   }
 
+  const handleFileChange = (e) => {
+    setFiles(Array.from(e.target.files))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -29,20 +36,29 @@ export default function Contact() {
     setSuccess(false)
 
     try {
-      await api.post("/contact", formData)
+      const payload = new FormData()
+      Object.entries(formData).forEach(([key, val]) => {
+        if (val) payload.append(key, val)
+      })
+      files.forEach((f) => payload.append("attachments", f))
+
+      await api.post("/quotes", payload, {
+        headers: { "Content-Type": "multipart/form-data" }
+      })
 
       setSuccess(true)
       setFormData({
         name: "",
         email: "",
-        subject: "",
-        message: "",
+        serviceCategory: "",
+        description: "",
+        budgetRange: "",
+        deadline: "",
       })
-
-      // Clear success message after 3 seconds
+      setFiles([])
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to send message. Please try again.")
+      setError(err.response?.data?.message || "Failed to submit quote request.")
     } finally {
       setLoading(false)
     }
@@ -50,14 +66,7 @@ export default function Contact() {
 
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-black via-gray-950 to-black text-white py-24 px-6 overflow-hidden">
-
-      {/* Background Glow */}
-      <div className="absolute top-20 left-10 w-72 h-72 bg-purple-600/20 blur-[120px] rounded-full"></div>
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-600/20 blur-[150px] rounded-full"></div>
-
       <div className="max-w-6xl mx-auto relative z-10">
-
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -65,14 +74,13 @@ export default function Contact() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Let’s Build Something <span className="text-purple-500">Powerful</span>
+            Request a Quote
           </h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Have a project in mind? Tell us about it and our team will get back to you shortly.
+            Tell us about your project and we'll get back with a custom proposal.
           </p>
         </motion.div>
 
-        {/* Contact Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -81,7 +89,6 @@ export default function Contact() {
         >
           <form onSubmit={handleSubmit} className="space-y-6">
 
-            {/* Name */}
             <div>
               <label className="block mb-2 text-sm text-gray-300">Full Name</label>
               <input
@@ -94,7 +101,6 @@ export default function Contact() {
               />
             </div>
 
-            {/* Email */}
             <div>
               <label className="block mb-2 text-sm text-gray-300">Email</label>
               <input
@@ -107,32 +113,66 @@ export default function Contact() {
               />
             </div>
 
-            {/* Subject */}
             <div>
-              <label className="block mb-2 text-sm text-gray-300">Subject</label>
-              <input
-                type="text"
-                name="subject"
-                value={formData.subject}
+              <label className="block mb-2 text-sm text-gray-300">Service Category</label>
+              <select
+                name="serviceCategory"
+                required
+                value={formData.serviceCategory}
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-purple-500 focus:outline-none transition"
-              />
+              >
+                <option value="">Select a service</option>
+                <option value="graphic_design">Graphic Design</option>
+                <option value="web_development">Web Development</option>
+              </select>
             </div>
 
-            {/* Message */}
             <div>
-              <label className="block mb-2 text-sm text-gray-300">Message</label>
+              <label className="block mb-2 text-sm text-gray-300">Description</label>
               <textarea
-                name="message"
+                name="description"
                 rows="5"
                 required
-                value={formData.message}
+                value={formData.description}
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-purple-500 focus:outline-none transition resize-none"
               />
             </div>
 
-            {/* Button */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block mb-2 text-sm text-gray-300">Budget Range</label>
+                <input
+                  type="text"
+                  name="budgetRange"
+                  value={formData.budgetRange}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm text-gray-300">Deadline</label>
+                <input
+                  type="date"
+                  name="deadline"
+                  value={formData.deadline}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block mb-2 text-sm text-gray-300">Attachments</label>
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                className="w-full text-gray-300"
+              />
+            </div>
+
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
@@ -140,17 +180,15 @@ export default function Contact() {
               disabled={loading}
               className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-semibold transition disabled:opacity-50"
             >
-              {loading ? "Sending..." : "Send Message"}
+              {loading ? <Loader2 className="animate-spin" /> : "Submit Request"}
             </motion.button>
 
-            {/* Success */}
             {success && (
               <p className="text-green-400 text-center mt-4">
-                ✅ Message sent successfully!
+                ✅ Request sent successfully!
               </p>
             )}
 
-            {/* Error */}
             {error && (
               <p className="text-red-400 text-center mt-4">
                 {error}

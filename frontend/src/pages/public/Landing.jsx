@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Code2, Palette, Zap } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import heroTechImage from "../../assets/hero-tech.jpeg"
@@ -87,7 +87,7 @@ export default function Landing() {
           className="absolute bottom-20 right-20 w-96 h-96 bg-yellow-500/10 blur-3xl rounded-full"
         />
 
-        <div className="relative max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+        <div className="relative max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center w-full">
 
           {/* TEXT */}
           <motion.div
@@ -109,7 +109,7 @@ export default function Landing() {
               high-performance digital products for ambitious brands.
             </p>
 
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex gap-4 flex-wrap">
               <button
                 onClick={() => navigate("/portfolio")}
                 className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-3 rounded-full font-medium hover:scale-105 transition shadow-lg shadow-red-600/30"
@@ -132,7 +132,7 @@ export default function Landing() {
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="relative flex justify-center"
+            className="relative flex justify-center hidden md:flex"
           >
             <div className="relative p-[3px] rounded-3xl overflow-hidden">
               <motion.div
@@ -158,12 +158,106 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ================= STATS ================= */}
+      <section className="py-16 px-6 bg-white/5 backdrop-blur-sm border-y border-white/10">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 text-center">
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }}>
+            <h3 className="text-4xl font-bold text-red-500"><Counter end={50} />+</h3>
+            <p className="text-gray-400 mt-2">Projects Delivered</p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }}>
+            <h3 className="text-4xl font-bold text-yellow-400"><Counter end={30} />+</h3>
+            <p className="text-gray-400 mt-2">Happy Clients</p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }}>
+            <h3 className="text-4xl font-bold text-blue-400"><Counter end={15} />+</h3>
+            <p className="text-gray-400 mt-2">Team Members</p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.8 }} viewport={{ once: true }}>
+            <h3 className="text-4xl font-bold text-green-400"><Counter end={8} /></h3>
+            <p className="text-gray-400 mt-2">Years of Experience</p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ================= SERVICES ================= */}
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold">Our Services</h2>
+            <p className="text-gray-400 mt-4 max-w-2xl mx-auto">
+              Comprehensive digital solutions tailored to your brand's unique needs
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { icon: Code2, title: "Web Development", desc: "Scalable, high-performance web applications" },
+              { icon: Palette, title: "UI/UX Design", desc: "Beautiful interfaces that users love" },
+              { icon: Zap, title: "Optimization", desc: "Lightning-fast performance and conversion" }
+            ].map((service, idx) => {
+              const Icon = service.icon
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: idx * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-white/5 border border-white/10 p-8 rounded-2xl hover:border-red-500/40 transition group"
+                >
+                  <Icon className="text-red-500 mb-4 group-hover:scale-110 transition" size={32} />
+                  <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+                  <p className="text-gray-400">{service.desc}</p>
+                </motion.div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= TESTIMONIALS ================= */}
+      <section className="py-24 px-6 bg-white/5 backdrop-blur-sm">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-4xl font-bold mb-16">What Clients Say</h2>
+
+          <motion.div
+            key={index}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="bg-white/10 border border-white/20 p-8 rounded-2xl"
+          >
+            <p className="text-xl mb-6 italic">"{testimonials[index].text}"</p>
+            <p className="font-semibold text-red-400">{testimonials[index].name}</p>
+          </motion.div>
+
+          <div className="flex justify-center gap-2 mt-8">
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIndex(i)}
+                className={`w-2 h-2 rounded-full transition ${
+                  i === index ? "bg-red-500 w-8" : "bg-white/30"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ================= CTA ================= */}
       <section className="py-24 px-6 bg-gradient-to-r from-red-600 to-red-700 text-center">
-        <h2 className="text-3xl font-bold mb-6">
-          Let’s Build Something Exceptional
+        <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          Let's Build Something Exceptional
         </h2>
-        <p className="mb-8 text-white/90">
+        <p className="mb-8 text-white/90 max-w-2xl mx-auto">
           Partner with a digital team that understands performance and precision.
         </p>
         <button

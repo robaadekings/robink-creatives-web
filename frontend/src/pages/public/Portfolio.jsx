@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import axios from "../../utils/axios"
+import { Loader2 } from "lucide-react"
+import api from "../../utils/axios"
 
 export default function Portfolio() {
   const [projects, setProjects] = useState([])
   const [activeCategory, setActiveCategory] = useState("all")
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        const { data } = await axios.get("/api/portfolios")
-        setProjects(data.filter((p) => p.active))
+        setLoading(true)
+        const { data } = await api.get("/portfolios")
+        setProjects(data?.data?.filter((p) => p.active) || [])
+        setError("")
       } catch (err) {
         console.error("Failed to load portfolio", err)
+        setError("Failed to load portfolio")
       } finally {
         setLoading(false)
       }

@@ -1,25 +1,30 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import axios from "../../utils/axios"
+import { Loader2 } from "lucide-react"
+import api from "../../utils/axios"
 
 export default function Services() {
   const [services, setServices] = useState([])
   const [categories, setCategories] = useState([])
   const [activeCategory, setActiveCategory] = useState("all")
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
         const [catRes, servRes] = await Promise.all([
-          axios.get("/api/service-categories"),
-          axios.get("/api/services"),
+          api.get("/service-categories"),
+          api.get("/services"),
         ])
 
-        setCategories(catRes.data)
-        setServices(servRes.data)
+        setCategories(catRes.data?.data || catRes.data || [])
+        setServices(servRes.data?.data || servRes.data || [])
+        setError("")
       } catch (err) {
         console.error("Failed to load services", err)
+        setError("Failed to load services. Please try again later.")
       } finally {
         setLoading(false)
       }
@@ -97,8 +102,18 @@ export default function Services() {
       {/* ================= SERVICES GRID ================= */}
       <section className="max-w-7xl mx-auto px-6 pb-32">
 
+        {error && (
+          <div className="bg-red-500/20 border border-red-500/40 text-red-400 p-4 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+
         {loading ? (
-          <p className="text-center text-gray-400">Loading services...</p>
+          <div className="flex justify-center items-center h-96">
+            <Loader2 className="animate-spin text-red-500" size={32} />
+          </div>
+        ) : filteredServices.length === 0 ? (
+          <p className="text-center text-gray-400">No services available yet</p>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
 
@@ -122,6 +137,14 @@ export default function Services() {
                   <p className="text-gray-400 text-sm mb-6">
                     {service.description}
                   </p>
+
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {service.features?.map((feature, idx) => (
+                      <span key={idx} className="text-xs bg-white/10 px-2 py-1 rounded-full text-gray-300">
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
 
                   <div className="flex justify-between items-center">
                     <span className="text-red-400 font-medium">

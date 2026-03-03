@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Plus, Search, Pencil, Trash2, Eye } from "lucide-react"
+import { Plus, Search, Pencil, Trash2, Eye, Loader2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import api from "../../utils/axios"
 
@@ -35,15 +35,25 @@ export default function AdminProjects() {
   }, [search, statusFilter, projects])
 
   const fetchProjects = async () => {
-    const { data } = await api.get("/admin/projects")
-    setProjects(data)
-    setFiltered(data)
-    setLoading(false)
+    try {
+      setLoading(true)
+      const { data } = await api.get("/admin/projects")
+      setProjects(data.data || [])
+      setFiltered(data.data || [])
+    } catch (err) {
+      console.error("Projects error:", err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const fetchClients = async () => {
-    const { data } = await api.get("/admin/clients")
-    setClients(data)
+    try {
+      const { data } = await api.get("/admin/clients")
+      setClients(data.data || [])
+    } catch (err) {
+      console.error("Clients error:", err)
+    }
   }
 
   const filterProjects = () => {
@@ -51,7 +61,7 @@ export default function AdminProjects() {
 
     if (search) {
       result = result.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase())
+        p.title?.toLowerCase().includes(search.toLowerCase())
       )
     }
 
@@ -68,7 +78,13 @@ export default function AdminProjects() {
     fetchProjects()
   }
 
-  if (loading) return <div>Loading...</div>
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <Loader2 className="animate-spin text-red-500" size={32} />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -133,9 +149,9 @@ export default function AdminProjects() {
           <tbody>
             {filtered.map((project) => (
               <tr key={project._id} className="border-b border-white/5 hover:bg-white/5">
-                <td className="py-3 font-medium">{project.name}</td>
-                <td>{project.clientName}</td>
-                <td>${project.budget}</td>
+                <td className="py-3 font-medium">{project.title}</td>
+                <td>{project.client?.name || project.clientName || "—"}</td>
+                <td>${project.budget?.toLocaleString() || "—"}</td>
 
                 <td>
                   <ProgressBar value={project.progress || 0} />
