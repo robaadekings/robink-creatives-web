@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const controller = require("../controllers/serviceController");
-const validate = require("../middlewares/validateMiddleware"); // ✅ add this
+const validate = require("../middlewares/validateMiddleware");
 const { createServiceSchema, updateServiceSchema } = require("../validators/serviceValidator");
-const auth = require("../middlewares/authMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware").authenticateToken;
 const role = require("../middlewares/roleMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
 
@@ -14,22 +14,22 @@ router.get("/", controller.listServices);
 // Admin routes
 router.post(
   "/",
-  auth,
+  authMiddleware,
   role("admin"),
   upload.single("image"),
-  validate(createServiceSchema),  // now works
+  validate(createServiceSchema),
   controller.createService
 );
 
 router.put(
   "/:id",
-  auth,
+  authMiddleware,
   role("admin"),
   upload.single("image"),
   validate(updateServiceSchema),
   controller.updateService
 );
 
-router.delete("/:id", auth, role("admin"), controller.deleteService);
+router.delete("/:id", authMiddleware, role("admin"), controller.deleteService);
 
 module.exports = router;

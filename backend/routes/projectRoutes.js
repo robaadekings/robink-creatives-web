@@ -4,7 +4,7 @@ const router = express.Router();
 const projectController = require('../controllers/projectController');
 const validate = require('../middlewares/validateMiddleware');
 const upload = require('../middlewares/uploadMiddleware');
-const auth = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware').authenticateToken;
 const role = require('../middlewares/roleMiddleware');
 
 const {
@@ -19,7 +19,7 @@ const {
 
 router.post(
   '/',
-  auth,                    // ✅ first verify token
+  authMiddleware,                    // ✅ first verify token
   role('admin'),           // ✅ then check role
   upload.array('assets', 5),
   validate(createProjectSchema),
@@ -28,21 +28,21 @@ router.post(
 
 router.get(
   '/',
-  auth,
+  authMiddleware,
   role('admin'),
   projectController.listProjects
 );
 
 router.get(
   '/:id',
-  auth,
+  authMiddleware,
   role('admin'),
   projectController.getProject
 );
 
 router.put(
   '/:id',
-  auth,
+  authMiddleware,
   role('admin'),
   upload.array('assets', 5),
   validate(updateProjectSchema),
@@ -51,7 +51,7 @@ router.put(
 
 router.delete(
   '/:id',
-  auth,
+  authMiddleware,
   role('admin'),
   projectController.deleteProject
 );

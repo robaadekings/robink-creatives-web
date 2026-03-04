@@ -3,7 +3,7 @@ const router = express.Router();
 const controller = require('../controllers/quoteController');
 const validate = require('../middlewares/validateMiddleware');
 const upload = require('../middlewares/uploadMiddleware');
-const auth = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware').authenticateToken;
 const role = require('../middlewares/roleMiddleware');
 const { createQuoteSchema, updateQuoteStatusSchema } = require('../validators/quoteValidator');
 
@@ -18,14 +18,14 @@ router.post(
 //admin view all quotes
 router.get(
     '/',
-    auth,
+    authMiddleware,
     role('admin'),
     controller.listQuotes
 );
 //admin view single quote details
 router.get(
     '/:id',
-    auth,
+    authMiddleware,
     role('admin'),
     controller.getQuote
 );
@@ -33,7 +33,7 @@ router.get(
 //admin update quote status
 router.patch(
     '/:id/status',
-    auth,
+    authMiddleware,
     role('admin'),
     validate(updateQuoteStatusSchema),
     controller.updateQuoteStatus
@@ -42,7 +42,7 @@ router.patch(
 //admin delete quote (optional)
 router.delete(
     '/:id',
-    auth,
+    authMiddleware,
     role('admin'),
     controller.deleteQuote
 );
@@ -50,7 +50,7 @@ router.delete(
 //quote invoice conversion
 router.post(
     "/:id/convert-to-invoice",
-    auth,
+    authMiddleware,
     role("admin"),
     controller.convertQuoteToInvoice  
 );

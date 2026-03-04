@@ -21,6 +21,7 @@ import AdminClients from "../pages/admin/AdminClients"
 import AdminInvoices from "../pages/admin/AdminInvoices"
 import AdminQuotes from "../pages/admin/AdminQuotes"
 import AdminSettings from "../pages/admin/AdminSettings"
+import AdminMessages from "../pages/admin/AdminMessages"
 import ProjectDetail from "../pages/admin/ProjectDetail"
 
 import ClientDashboard from "../pages/client/Dashboard"
@@ -70,6 +71,7 @@ export default function AppRoutes() {
           <Route path="clients" element={<PageWrapper><AdminClients /></PageWrapper>} />
           <Route path="invoices" element={<PageWrapper><AdminInvoices /></PageWrapper>} />
           <Route path="quotes" element={<PageWrapper><AdminQuotes /></PageWrapper>} />
+          <Route path="messages" element={<PageWrapper><AdminMessages /></PageWrapper>} />
           <Route path="settings" element={<PageWrapper><AdminSettings /></PageWrapper>} />
         </Route>
 

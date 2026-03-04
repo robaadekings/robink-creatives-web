@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const auth = require("../middlewares/authMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware").authenticateToken;
 const role = require("../middlewares/roleMiddleware");
 
 const dashboard = require("../controllers/adminDashboardController");
@@ -15,7 +15,7 @@ const adminController = require("../controllers/adminController");
 // =====================
 router.get(
   "/dashboard",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   dashboard.getDashboardStats
 );
@@ -26,14 +26,14 @@ router.get(
 // =====================
 router.get(
   "/invoice-status-chart",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   dashboard.getInvoiceStatusChart
 );
 
 router.get(
   "/revenue-by-month",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   dashboard.getRevenueByMonth
 );
@@ -43,14 +43,14 @@ router.get(
 // =====================
 router.get(
   "/clients",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.listClients
 );
 
 router.get(
   "/clients/:id",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.getClientDetails
 );
@@ -60,14 +60,14 @@ router.get(
 // =====================
 router.get(
   "/projects",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.listProjects
 );
 
 router.patch(
   "/projects/:id/status",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.updateProjectStatus
 );
@@ -77,14 +77,14 @@ router.patch(
 // =====================
 router.get(
   "/invoices",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.listInvoices
 );
 
 router.patch(
   "/invoices/:id/status",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.updateInvoiceStatus
 );
@@ -94,14 +94,14 @@ router.patch(
 // =====================
 router.get(
   "/quotes",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.listQuotes
 );
 
 router.patch(
   "/quotes/:id/status",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.updateQuoteStatus
 );
@@ -111,21 +111,21 @@ router.patch(
 // =====================
 router.get(
   "/notifications",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   notif.listNotifications
 );
 
 router.get(
   "/notifications/unread-count",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   notif.unreadCount
 );
 
 router.patch(
   "/notifications/:id/read",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   notif.markRead
 );
@@ -135,7 +135,7 @@ router.patch(
 // =====================
 router.patch(
   "/users/:id/promote",
-  auth,
+  authMiddleware,
   role("admin", "superadmin"),
   adminController.promoteToAdmin
 );

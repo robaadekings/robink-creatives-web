@@ -7,6 +7,7 @@ import {
   Users,
   FileText,
   Receipt,
+  Mail,
   Settings,
   LogOut,
   Menu
@@ -18,6 +19,7 @@ const navItems = [
   { name: "Clients", path: "/admin/clients", icon: Users },
   { name: "Invoices", path: "/admin/invoices", icon: Receipt },
   { name: "Quotes", path: "/admin/quotes", icon: FileText },
+  { name: "Messages", path: "/admin/messages", icon: Mail },
 ]
 
 export default function AdminSidebar({ collapsed }) {

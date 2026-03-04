@@ -3,7 +3,7 @@ const router = express.Router();
 
 const controller = require('../controllers/portfolioController');
 const validate = require('../middlewares/validateMiddleware');
-const auth = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware').authenticateToken;
 const role = require('../middlewares/roleMiddleware');
 const upload = require('../middlewares/uploadMiddleware');
 
@@ -22,7 +22,7 @@ router.get('/:id', controller.getPortfolio);
 // ✅ CREATE
 router.post(
   '/',
-  auth,
+  authMiddleware,
   role('admin'),
   upload.array('images', 5),
   validate(createPortfolioSchema),
@@ -32,7 +32,7 @@ router.post(
 // ✅ UPDATE
 router.put(
   '/:id',
-  auth,
+  authMiddleware,
   role('admin'),
   upload.array('images', 5),
   validate(updatePortfolioSchema),
@@ -42,7 +42,7 @@ router.put(
 // ✅ DELETE
 router.delete(
   '/:id',
-  auth,
+  authMiddleware,
   role('admin'),
   controller.deletePortfolio
 );

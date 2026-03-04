@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/authController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { authenticateToken } = require('../middlewares/authMiddleware');
 const validate = require('../middlewares/validateMiddleware');
 const{ registerSchema,
       loginSchema
@@ -9,7 +9,7 @@ const{ registerSchema,
 
 router.post('/register', validate(registerSchema), controller.register);
 router.post('/login', validate(loginSchema), controller.login);
-router.get('/me', authMiddleware, controller.getMe);
+router.get('/me', authenticateToken, controller.getMe);
 router.post('/forgot-password', controller.forgotPassword);
 router.post('/reset-password/:token', controller.resetPassword);
 

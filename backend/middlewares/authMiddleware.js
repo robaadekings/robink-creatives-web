@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/ApiError");
 const User = require("../models/User");
 
-module.exports = async function authMiddleware(req, res, next) {
+const authenticateToken = async function (req, res, next) {
   try {
     let token;
 
@@ -35,3 +35,19 @@ module.exports = async function authMiddleware(req, res, next) {
     return next(new ApiError(401, "Invalid or expired token"));
   }
 };
+
+const roleCheck = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return next(new ApiError(401, "Unauthorized — user not authenticated"));
+    }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return next(new ApiError(403, "Forbidden — insufficient permissions"));
+    }
+
+    next();
+  };
+};
+
+module.exports = { authenticateToken, roleCheck };
