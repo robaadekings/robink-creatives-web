@@ -44,6 +44,31 @@ exports.getClientProject = async (req, res, next) => {
   }
 };
 
+// ===============================
+// Client — Create Project Request
+// ===============================
+exports.createClientProject = async (req, res, next) => {
+  try {
+    const { title, description, serviceId, budget, deadline } = req.body;
+
+    const project = await Project.create({
+      title,
+      description,
+      serviceId,
+      budget,
+      deadline,
+      client: req.user._id,
+      clientName: req.user.name,
+      clientEmail: req.user.email,
+      status: 'pending'
+    });
+
+    res.status(201).json({ success: true, data: project });
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 // ===============================
 // Client — List Their Invoices

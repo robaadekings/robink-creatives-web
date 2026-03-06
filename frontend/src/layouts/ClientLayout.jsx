@@ -7,8 +7,10 @@ import {
   Download,
   LogOut,
   Menu,
-  X
+  X,
+  Globe
 } from "lucide-react"
+import logo from "../assets/robink-logo.png"
 import { useState } from "react"
 
 export default function ClientLayout() {
@@ -46,7 +48,10 @@ export default function ClientLayout() {
         
         {/* Header */}
         <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
-          {!collapsed && <h2 className="text-xl font-bold tracking-wide text-red-500">RobinK</h2>}
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Robink Logo" className="w-8 h-8" />
+            {!collapsed && <h2 className="text-xl font-bold tracking-wide text-red-500">Robink</h2>}
+          </div>
           <button
             onClick={toggleSidebar}
             className="p-2 hover:bg-white/10 rounded-lg transition"
@@ -71,6 +76,17 @@ export default function ClientLayout() {
           <NavLink icon={FileText} label="Invoices" href="/client/invoices" />
           <NavLink icon={Download} label="Files" href="/client/files" />
         </nav>
+
+        {/* Website link */}
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-white/10 hover:text-white transition-all"
+        >
+          <Globe size={20} />
+          {!collapsed && <span>Website</span>}
+        </a>
 
         {/* Logout */}
         <button

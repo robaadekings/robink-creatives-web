@@ -105,59 +105,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ================= MISSION & VISION ================= */}
-      <section className="py-16 px-6 relative z-10">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold mb-4">Our Purpose & Vision</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">Guiding principles that drive our innovation and excellence</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Mission Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="relative group"
-            >
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-red-500/30 to-yellow-400/20 blur-2xl opacity-0 group-hover:opacity-100 transition duration-500" />
-              <div className="relative bg-white/5 border border-white/10 rounded-3xl p-10 h-full hover:border-red-500/50 transition shadow-2xl backdrop-blur-xl group-hover:shadow-red-500/20 duration-300">
-                <div className="text-6xl font-bold text-red-500 mb-4 group-hover:scale-110 transition duration-300">📍</div>
-                <h3 className="text-3xl font-bold mb-4 text-white">Our Mission</h3>
-                <p className="text-gray-300 leading-relaxed text-sm group-hover:text-gray-200 transition">
-                  To empower ambitious brands and innovative companies with world-class digital solutions that merge strategic design, creative excellence, and engineering precision—delivering measurable business growth and unforgettable user experiences.
-                </p>
-              </div>
-            </motion.div>
-
-            {/* Vision Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="relative group"
-            >
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-yellow-400/20 to-red-500/25 blur-2xl opacity-0 group-hover:opacity-100 transition duration-500" />
-              <div className="relative bg-white/5 border border-white/10 rounded-3xl p-10 h-full hover:border-red-500/50 transition shadow-2xl backdrop-blur-xl group-hover:shadow-yellow-500/20 duration-300">
-                <div className="text-6xl font-bold text-yellow-400 mb-4 group-hover:scale-110 transition duration-300">🎯</div>
-                <h3 className="text-3xl font-bold mb-4 text-white">Our Vision</h3>
-                <p className="text-gray-300 leading-relaxed text-sm group-hover:text-gray-200 transition">
-                  To be the most trusted partner for brands seeking digital transformation—recognized globally for our commitment to innovation, quality, and client success. We envision a future where premium digital design and engineering are accessible to every ambitious business.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* ================= SERVICES ================= */}
       <section className="py-20 px-6 relative z-10">

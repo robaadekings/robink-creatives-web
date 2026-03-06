@@ -11,6 +11,7 @@ router.get('/dashboard', authMiddleware, role("client"), client.getDashboardStat
 
 // 🔐 Projects
 router.get('/projects', authMiddleware, role("client"), client.getClientProjects);
+router.post('/projects', authMiddleware, role("client"), client.createClientProject);
 router.get('/project/:id', authMiddleware, role("client"), client.getClientProject);
 
 // 🔐 Invoices

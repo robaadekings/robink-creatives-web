@@ -22,10 +22,14 @@ function generateToken(user) {
 // ==============================
 exports.register = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, confirm } = req.body;
 
-    if (!name || !email || !password) {
-      throw new ApiError(400, "Name, email and password are required");
+    if (!name || !email || !password || !confirm) {
+      throw new ApiError(400, "Name, email, password, and confirm are required");
+    }
+
+    if (password !== confirm) {
+      throw new ApiError(400, "Passwords do not match");
     }
 
     const exists = await User.findOne({ email });

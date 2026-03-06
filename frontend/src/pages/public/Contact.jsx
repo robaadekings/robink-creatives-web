@@ -91,52 +91,52 @@ export default function Contact() {
 
             {/* Name */}
             <div>
-              <label className="block mb-2 text-sm text-gray-300">Full Name</label>
+              <label className="block mb-2 text-sm font-semibold text-amber-100">Full Name</label>
               <input
                 type="text"
                 name="name"
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-red-900/30 focus:border-red-600 focus:outline-none transition"
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="block mb-2 text-sm text-gray-300">Email</label>
+              <label className="block mb-2 text-sm font-semibold text-amber-100">Email</label>
               <input
                 type="email"
                 name="email"
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-red-900/30 focus:border-red-600 focus:outline-none transition"
               />
             </div>
 
             {/* Subject */}
             <div>
-              <label className="block mb-2 text-sm text-gray-300">Subject</label>
+              <label className="block mb-2 text-sm font-semibold text-amber-100">Subject</label>
               <input
                 type="text"
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-purple-500 focus:outline-none transition"
+                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-red-900/30 focus:border-red-600 focus:outline-none transition"
               />
             </div>
 
             {/* Message */}
             <div>
-              <label className="block mb-2 text-sm text-gray-300">Message</label>
+              <label className="block mb-2 text-sm font-semibold text-amber-100">Message</label>
               <textarea
                 name="message"
                 rows="5"
                 required
                 value={formData.message}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-purple-500 focus:outline-none transition resize-none"
+                className="w-full px-4 py-3 rounded-xl bg-black/40 border border-red-900/30 focus:border-red-600 focus:outline-none transition resize-none"
               />
             </div>
 
@@ -146,7 +146,7 @@ export default function Contact() {
               whileTap={{ scale: 0.97 }}
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 font-semibold transition disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-red-700 to-red-900 hover:from-red-600 hover:to-red-800 font-semibold transition disabled:opacity-50"
             >
               {loading ? "Sending..." : "Send Message"}
             </motion.button>

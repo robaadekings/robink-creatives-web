@@ -6,6 +6,7 @@ import Landing from "../pages/public/Landing"
 import Services from "../pages/public/Services"
 import Portfolio from "../pages/public/Portfolio"
 import Contact from "../pages/public/Contact"
+import About from "../pages/public/About"
 import QuoteRequest from "../pages/public/QuoteRequest"
 
 import Login from "../pages/portal/Login"
@@ -44,6 +45,7 @@ export default function AppRoutes() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<PageWrapper><Landing /></PageWrapper>} />
           <Route path="/services" element={<PageWrapper><Services /></PageWrapper>} />
+          <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
           <Route path="/portfolio" element={<PageWrapper><Portfolio /></PageWrapper>} />
           <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
           <Route path="/quote" element={<PageWrapper><QuoteRequest /></PageWrapper>} />

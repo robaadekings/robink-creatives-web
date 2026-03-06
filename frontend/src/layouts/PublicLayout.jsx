@@ -59,9 +59,9 @@ export default function PublicLayout() {
 
           <nav className="hidden md:flex items-center gap-1 text-sm font-medium tracking-wide">
             <NavItem to="/">Home</NavItem>
+            <NavItem to="/about">About</NavItem>
             <NavItem to="/services">Services</NavItem>
             <NavItem to="/portfolio">Portfolio</NavItem>
-            <NavItem to="/quote">Get a Quote</NavItem>
             <NavItem to="/contact">Contact</NavItem>
 
             <Link
@@ -84,9 +84,9 @@ export default function PublicLayout() {
           <div className="md:hidden bg-[#0f1219] border-t border-white/10">
             <div className="flex flex-col items-center gap-5 py-10 text-base">
               <NavItem to="/">Home</NavItem>
+              <NavItem to="/about">About</NavItem>
               <NavItem to="/services">Services</NavItem>
               <NavItem to="/portfolio">Portfolio</NavItem>
-              <NavItem to="/quote">Get a Quote</NavItem>
               <NavItem to="/contact">Contact</NavItem>
 
               <Link

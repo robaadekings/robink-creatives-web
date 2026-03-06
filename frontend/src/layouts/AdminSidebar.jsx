@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom"
 import { motion } from "framer-motion"
 import { useAuth } from "../context/AuthContext"
+import logo from "../assets/robink-logo.png"
 import {
   LayoutDashboard,
   FolderKanban,
@@ -10,7 +11,8 @@ import {
   Mail,
   Settings,
   LogOut,
-  Menu
+  Menu,
+  Globe
 } from "lucide-react"
 
 const navItems = [
@@ -32,11 +34,11 @@ export default function AdminSidebar({ collapsed }) {
       className="h-screen bg-white/5 backdrop-blur-xl border-r border-white/10 flex flex-col fixed left-0 top-0 z-40"
     >
       {/* Header */}
-      <div className="p-6 border-b border-white/10">
-        <h1 className="text-xl font-bold tracking-wide text-red-500">
-          {collapsed ? "RC" : "Robink"}
-        </h1>
-        <p className="text-xs text-gray-400 mt-1">{collapsed ? "Admin" : "Admin Panel"}</p>
+      <div className="p-6 border-b border-white/10 flex items-center space-x-3">
+        <NavLink to="/" className="flex items-center gap-2">
+          <img src={logo} alt="Robink Logo" className="w-8 h-8" />
+          {!collapsed && <span className="text-xl font-bold tracking-wide text-red-500">Admin Panel</span>}
+        </NavLink>
       </div>
 
       {/* Navigation */}
@@ -76,6 +78,16 @@ export default function AdminSidebar({ collapsed }) {
 
         {/* Settings & Logout */}
         <div className="space-y-1">
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white"
+          >
+            <Globe size={20} />
+            {!collapsed && <span className="text-sm">Website</span>}
+          </a>
+
           <NavLink
             to="/admin/settings"
             className={({ isActive }) =>
