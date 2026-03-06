@@ -1,25 +1,315 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
+import { motion } from "framer-motion"
+import { Loader2, FileText, DollarSign, ArrowLeft, Calendar, User, CheckCircle } from "lucide-react"
 import api from "../../utils/axios"
 
 export default function ProjectDetail() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [project, setProject] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [showCreateQuote, setShowCreateQuote] = useState(false)
+  const [showCreateInvoice, setShowCreateInvoice] = useState(false)
 
   useEffect(() => {
-    api.get(`/admin/projects/${id}`).then(res => setProject(res.data))
+    fetchProject()
   }, [id])
 
-  if (!project) return <div>Loading...</div>
+  const fetchProject = async () => {
+    try {
+      setLoading(true)
+      const { data } = await api.get(`/admin/projects/${id}`)
+      setProject(data.data)
+    } catch (err) {
+      console.error("Project error:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const createQuote = async () => {
+    try {
+      const quoteData = {
+        clientName: project.client?.name || project.clientName,
+        clientEmail: project.client?.email || project.clientEmail,
+        serviceId: project.serviceId?._id || project.serviceId,
+        serviceCategory: project.serviceId?.category?.name === 'Web Development' ? 'web_development' : 'graphic_design',
+        description: project.description || `${project.title} - Quote Request`,
+        projectId: id
+      }
+
+      await api.post("/quotes", quoteData)
+      alert("Quote created successfully!")
+      setShowCreateQuote(false)
+      fetchProject()
+    } catch (err) {
+      alert("Failed to create quote: " + (err.response?.data?.message || err.message))
+    }
+  }
+
+  const createInvoice = async () => {
+    try {
+      await api.post("/admin/invoices", {
+        projectId: id,
+        items: [
+          {
+            description: project.title || "Project Work",
+            quantity: 1,
+            unitPrice: project.budget || 0
+          }
+        ],
+        tax: 0,
+        discount: 0
+      })
+      alert("Invoice created successfully!")
+      setShowCreateInvoice(false)
+      fetchProject()
+    } catch (err) {
+      alert("Failed to create invoice: " + (err.response?.data?.message || err.message))
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <Loader2 className="animate-spin text-[#8B1C24]" size={48} />
+      </div>
+    )
+  }
+
+  if (!project) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-400 mb-4">Project not found</p>
+        <button onClick={() => navigate(-1)} className="text-[#8B1C24] hover:underline">Go back</button>
+      </div>
+    )
+  }
+
+  const getStatusBadgeColor = (status) => {
+    switch(status) {
+      case "pending": return "bg-yellow-600/20 text-yellow-400 border-yellow-600/30"
+      case "approved": return "bg-emerald-600/20 text-emerald-400 border-emerald-600/30"
+      case "in_progress": return "bg-green-600/20 text-green-400 border-green-600/30"
+      case "completed": return "bg-blue-600/20 text-blue-400 border-blue-600/30"
+      case "cancelled": return "bg-red-600/20 text-red-400 border-red-600/30"
+      default: return "bg-gray-600/20 text-gray-400 border-gray-600/30"
+    }
+  }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{project.name}</h2>
-      <p>Client: {project.clientName}</p>
-      <p>Budget: ${project.budget}</p>
-      <p>Status: {project.status}</p>
-      <p>Progress: {project.progress}%</p>
-      <p>Description: {project.description}</p>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <div className="flex-1">
+          <h2 className="text-3xl font-bold text-white">{project.title}</h2>
+          <p className="text-gray-400 mt-1">Project Details</p>
+        </div>
+      </div>
+
+      {/* Main Info */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+        >
+          <div className="space-y-6">
+            <div>
+              <p className="text-gray-400 text-sm flex items-center gap-2">
+                <User size={16} />
+                Client
+              </p>
+              <p className="text-xl font-semibold text-white mt-2">
+                {project.client?.name || project.clientName || "N/A"}
+              </p>
+              <p className="text-gray-400 text-sm mt-1">
+                {project.client?.email || project.clientEmail || "No email"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-400 text-sm flex items-center gap-2">
+                <FileText size={16} />
+                Service
+              </p>
+              <p className="text-lg font-semibold text-white mt-2">
+                {project.serviceId?.name || project.serviceId?.title || "N/A"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-400 text-sm flex items-center gap-2">
+                <DollarSign size={16} />
+                Budget
+              </p>
+              <p className="text-2xl font-bold text-[#8B1C24] mt-2">
+                ${(project.budget || 0).toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+        >
+          <div className="space-y-6">
+            <div>
+              <p className="text-gray-400 text-sm flex items-center gap-2">
+                <CheckCircle size={16} />
+                Status
+              </p>
+              <p className={`inline-block px-4 py-2 rounded-lg text-sm font-semibold border mt-2 capitalize ${getStatusBadgeColor(project.status)}`}>
+                {project.status}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-400 text-sm flex items-center gap-2">
+                <Calendar size={16} />
+                Deadline
+              </p>
+              <p className="text-lg font-semibold text-white mt-2">
+                {project.deadline ? new Date(project.deadline).toLocaleDateString() : "Not set"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-400 text-sm">Progress</p>
+              <div className="mt-3">
+                <div className="flex justify-between mb-2">
+                  <span className="text-white font-semibold">{project.progress || 0}%</span>
+                </div>
+                <div className="w-full bg-white/10 rounded-full h-2">
+                  <div
+                    className="bg-gradient-to-r from-[#8B1C24] to-red-600 h-2 rounded-full transition-all"
+                    style={{ width: `${project.progress || 0}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Description */}
+      {project.description && (
+        <motion.div
+          whileHover={{ scale: 1.01 }}
+          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+        >
+          <h3 className="text-xl font-semibold text-white mb-4">Description</h3>
+          <p className="text-gray-300 leading-relaxed">{project.description}</p>
+        </motion.div>
+      )}
+
+      {/* Assets */}
+      {project.assets && project.assets.length > 0 && (
+        <motion.div
+          whileHover={{ scale: 1.01 }}
+          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+        >
+          <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+            <FileText size={20} />
+            Assets
+          </h3>
+          <div className="space-y-2">
+            {project.assets.map((asset, idx) => (
+              <a
+                key={idx}
+                href={asset}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-3 bg-white/5 hover:bg-white/10 rounded-lg text-[#8B1C24] hover:underline transition"
+              >
+                📎 {asset.split('/').pop()}
+              </a>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Admin Actions */}
+      <div className="grid md:grid-cols-2 gap-4">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowCreateQuote(!showCreateQuote)}
+          className="bg-gradient-to-r from-[#8B1C24] to-red-600 hover:from-[#A62A32] hover:to-red-700 px-6 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition"
+        >
+          <FileText size={20} />
+          {showCreateQuote ? "Cancel" : "Create Quote"}
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowCreateInvoice(!showCreateInvoice)}
+          className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-6 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition"
+        >
+          <DollarSign size={20} />
+          {showCreateInvoice ? "Cancel" : "Create Invoice"}
+        </motion.button>
+      </div>
+
+      {/* Create Quote Confirmation */}
+      {showCreateQuote && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/5 border border-[#8B1C24]/30 rounded-2xl p-6"
+        >
+          <h3 className="text-xl font-semibold text-white mb-4">Create Quote for {project.client?.name || project.clientName}?</h3>
+          <p className="text-gray-400 mb-4">This will create a quote request based on project details.</p>
+          <div className="flex gap-4">
+            <button
+              onClick={createQuote}
+              className="flex-1 bg-[#8B1C24] hover:bg-[#A62A32] text-white font-semibold py-3 rounded-lg transition"
+            >
+              Confirm & Create Quote
+            </button>
+            <button
+              onClick={() => setShowCreateQuote(false)}
+              className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 rounded-lg transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Create Invoice Confirmation */}
+      {showCreateInvoice && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/5 border border-green-600/30 rounded-2xl p-6"
+        >
+          <h3 className="text-xl font-semibold text-white mb-4">Create Invoice for {project.client?.name || project.clientName}?</h3>
+          <p className="text-gray-400 mb-4">This will create an invoice for the project budget amount: ${(project.budget || 0).toLocaleString()}</p>
+          <div className="flex gap-4">
+            <button
+              onClick={createInvoice}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition"
+            >
+              Confirm & Create Invoice
+            </button>
+            <button
+              onClick={() => setShowCreateInvoice(false)}
+              className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 rounded-lg transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </motion.div>
+      )}
     </div>
   )
 }

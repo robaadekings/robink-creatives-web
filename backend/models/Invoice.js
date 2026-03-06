@@ -63,13 +63,19 @@ const invoiceSchema = new mongoose.Schema({
 
   notes: String,
   terms: String,
-  footer: String
+  footer: String,
+
+  clientApproved: {
+    type: Boolean,
+    default: false
+  },
+
+  approvedAt: Date
 
 }, { timestamps: true });
 
 
-invoiceSchema.pre("save", function(next) {
-
+invoiceSchema.pre("save", async function() {
   if (!this.invoiceNumber) {
     this.invoiceNumber = "INV-" + Date.now();
   }
@@ -77,8 +83,6 @@ invoiceSchema.pre("save", function(next) {
   if (!this.portalToken) {
     this.portalToken = crypto.randomBytes(24).toString("hex");
   }
-
-  next();
 });
 
 module.exports = mongoose.model("Invoice", invoiceSchema);

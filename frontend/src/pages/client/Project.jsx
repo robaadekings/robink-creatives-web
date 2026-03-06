@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Loader2, Plus } from "lucide-react"
+import { Loader2, Plus, Briefcase, DollarSign, Calendar, FileText, CheckCircle, X } from "lucide-react"
+import { motion } from "framer-motion"
 import api from "../../utils/axios"
 import { Button } from "../../components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog"
@@ -11,6 +12,7 @@ import { Textarea } from "../../components/ui/textarea"
 export default function ClientProjects() {
   const [projects, setProjects] = useState([])
   const [services, setServices] = useState([])
+  const [servicesLoading, setServicesLoading] = useState(false)
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -36,9 +38,11 @@ export default function ClientProjects() {
   }
 
   const fetchServices = () => {
+    setServicesLoading(true)
     api.get("/services")
       .then(res => setServices(res.data.data || []))
       .catch(err => console.error("Services error:", err))
+      .finally(() => setServicesLoading(false))
   }
 
   const handleSubmit = async (e) => {
@@ -47,7 +51,7 @@ export default function ClientProjects() {
     try {
       await api.post("/client/projects", formData)
       setModalOpen(false)
-      setFormData({ title: '', description: '', budget: '', deadline: '' })
+      setFormData({ title: '', description: '', serviceId: '', budget: '', deadline: '' })
       fetchProjects()
     } catch (err) {
       console.error("Create project error:", err)
@@ -59,94 +63,217 @@ export default function ClientProjects() {
   if (loading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-red-500" size={32} /></div>
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">My Projects</h2>
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-3xl font-bold text-white">My Projects</h2>
+          <p className="text-gray-400 mt-1">Track and manage your creative projects</p>
+        </div>
+
         <Dialog open={modalOpen} onOpenChange={setModalOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-red-600 hover:bg-red-700">
-              <Plus className="w-4 h-4 mr-2" />
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-[#8B1C24] hover:bg-[#A62A32] px-6 py-3 rounded-xl flex items-center gap-2 font-semibold transition text-white shadow-lg"
+            >
+              <Plus size={20} />
               Request New Project
-            </Button>
+            </motion.button>
           </DialogTrigger>
-          <DialogContent className="bg-gray-900 border-white/10">
-            <DialogHeader>
-              <DialogTitle className="text-white">Request New Project</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="title">Project Title</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  required
-                  className="bg-white/5 border-white/10"
-                />
-              </div>
-              <div>
-                <Label htmlFor="serviceId">Service</Label>
-                <select
-                  id="serviceId"
-                  value={formData.serviceId}
-                  onChange={(e) => setFormData({...formData, serviceId: e.target.value})}
-                  required
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-red-600 focus:outline-none"
+          <DialogContent className="bg-[#0f0f23] border border-[#8B1C24]/30 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-6 border-b border-[#8B1C24]/30">
+              <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-bold text-white flex items-center">
+                  <Plus className="w-6 h-6 mr-3 text-[#8B1C24]" />
+                  Request New Project
+                </h3>
+                <button
+                  onClick={() => setModalOpen(false)}
+                  className="p-2 hover:bg-[#8B1C24]/10 rounded-lg transition-colors"
                 >
-                  <option value="">Select a service</option>
-                  {services.map(service => (
-                    <option key={service._id} value={service._id}>{service.title}</option>
-                  ))}
-                </select>
+                  <X className="w-5 h-5 text-gray-400" />
+                </button>
               </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
+                    <Briefcase className="w-4 h-4 mr-2 text-[#8B1C24]" />
+                    Project Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white placeholder-gray-500"
+                    placeholder="Enter project title"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
+                    <FileText className="w-4 h-4 mr-2 text-[#8B1C24]" />
+                    Service *
+                  </label>
+                  <select
+                    required
+                    value={formData.serviceId}
+                    onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white"
+                    disabled={servicesLoading}
+                  >
+                    <option value="" className="bg-gray-800">
+                      {servicesLoading ? "Loading services..." : "Select a service"}
+                    </option>
+                    {services.map(service => (
+                      <option key={service._id} value={service._id} className="bg-gray-800">
+                        {service.title} - {service.category?.name || 'General'}
+                        {service.basePrice && ` ($${service.basePrice})`}
+                      </option>
+                    ))}
+                  </select>
+                  {formData.serviceId && (
+                    <div className="mt-2 p-3 bg-[#8B1C24]/10 border border-[#8B1C24]/20 rounded-lg">
+                      {(() => {
+                        const selectedService = services.find(s => s._id === formData.serviceId);
+                        return selectedService ? (
+                          <div className="text-sm text-gray-300">
+                            <p className="font-medium text-white mb-1">{selectedService.title}</p>
+                            {selectedService.description && (
+                              <p className="mb-2">{selectedService.description}</p>
+                            )}
+                            <div className="flex gap-4 text-xs">
+                              {selectedService.basePrice && (
+                                <span className="text-green-400">Price: ${selectedService.basePrice}</span>
+                              )}
+                              {selectedService.deliveryTime && (
+                                <span className="text-blue-400">Delivery: {selectedService.deliveryTime}</span>
+                              )}
+                            </div>
+                            {selectedService.features && selectedService.features.length > 0 && (
+                              <div className="mt-2">
+                                <p className="text-xs text-gray-400 mb-1">Features:</p>
+                                <ul className="text-xs space-y-1">
+                                  {selectedService.features.slice(0, 3).map((feature, idx) => (
+                                    <li key={idx} className="flex items-center">
+                                      <span className="text-[#8B1C24] mr-1">•</span>
+                                      {feature}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
+                    <DollarSign className="w-4 h-4 mr-2 text-green-400" />
+                    Budget Estimate
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.budget}
+                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white placeholder-gray-500"
+                    placeholder="0.00"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
+                    <Calendar className="w-4 h-4 mr-2 text-blue-400" />
+                    Preferred Deadline
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.deadline}
+                    onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white"
+                  />
+                </div>
+              </div>
+
               <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
+                <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
+                  <FileText className="w-4 h-4 mr-2 text-orange-400" />
+                  Project Description
+                </label>
+                <textarea
+                  rows="4"
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="bg-white/5 border-white/10"
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white resize-none placeholder-gray-500"
+                  placeholder="Describe your project requirements, goals, and any specific details..."
                 />
               </div>
-              <div>
-                <Label htmlFor="budget">Budget (optional)</Label>
-                <Input
-                  id="budget"
-                  type="number"
-                  value={formData.budget}
-                  onChange={(e) => setFormData({...formData, budget: e.target.value})}
-                  className="bg-white/5 border-white/10"
-                />
+
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="flex-1 py-3 px-6 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-700 transition-all duration-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 py-3 px-6 rounded-xl bg-[#8B1C24] text-white font-semibold hover:bg-[#A62A32] transition-all duration-300 disabled:opacity-50 flex items-center justify-center"
+                >
+                  {submitting ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Submit Request
+                    </>
+                  )}
+                </button>
               </div>
-              <div>
-                <Label htmlFor="deadline">Deadline (optional)</Label>
-                <Input
-                  id="deadline"
-                  type="date"
-                  value={formData.deadline}
-                  onChange={(e) => setFormData({...formData, deadline: e.target.value})}
-                  className="bg-white/5 border-white/10"
-                />
-              </div>
-              <Button type="submit" disabled={submitting} className="w-full bg-red-600 hover:bg-red-700">
-                {submitting ? <Loader2 className="animate-spin w-4 h-4" /> : 'Submit Request'}
-              </Button>
             </form>
           </DialogContent>
         </Dialog>
       </div>
 
       {projects.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-          <p>No projects yet. Request one to get started!</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-12 max-w-md mx-auto">
+            <Briefcase className="mx-auto text-gray-500 mb-4" size={48} />
+            <h3 className="text-xl font-semibold text-white mb-2">No Projects Yet</h3>
+            <p className="text-gray-400 mb-6">Start your creative journey by requesting your first project!</p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setModalOpen(true)}
+              className="bg-[#8B1C24] hover:bg-[#A62A32] px-6 py-3 rounded-xl text-white font-semibold transition"
+            >
+              Request New Project
+            </motion.button>
+          </div>
+        </motion.div>
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
           {projects.map(project => (
-            <div
+            <motion.div
               key={project._id}
+              whileHover={{ scale: 1.02 }}
               onClick={() => navigate(`/client/projects/${project._id}`)}
-              className="bg-white/5 border border-white/10 p-6 rounded-2xl cursor-pointer hover:bg-white/10 transition"
+              className="bg-white/5 border border-white/10 p-6 rounded-2xl cursor-pointer hover:bg-white/10 transition-all duration-300 hover:border-[#8B1C24]/30"
             >
               <h3 className="font-semibold text-lg text-white">{project.title}</h3>
               <p className="text-gray-400 text-sm mt-2">
@@ -164,7 +291,7 @@ export default function ClientProjects() {
               )}
 
               <ProgressBar value={project.progress || 0} />
-            </div>
+            </motion.div>
           ))}
         </div>
       )}

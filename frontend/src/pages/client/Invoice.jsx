@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
-import { Loader2, Download, Eye } from "lucide-react"
+import { Loader2, Download, Eye, CheckCircle } from "lucide-react"
 import api from "../../utils/axios"
 
 export default function ClientInvoices() {
   const [invoices, setInvoices] = useState([])
   const [loading, setLoading] = useState(true)
+  const [approving, setApproving] = useState(null)
 
   useEffect(() => {
     api.get("/client/invoices")
@@ -14,7 +15,27 @@ export default function ClientInvoices() {
   }, [])
 
   const downloadPDF = (id) => {
-    window.open(`${import.meta.env.VITE_API_URL}/client/invoice/${id}/pdf`)
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+    window.open(`${apiUrl}/client/invoice/${id}/pdf`)
+  }
+
+  const approveInvoice = async (invoiceId) => {
+    try {
+      setApproving(invoiceId)
+      await api.put(`/client/invoice/${invoiceId}/approve`)
+      
+      // Update the invoice status locally
+      setInvoices(invoices.map(invoice => 
+        invoice._id === invoiceId 
+          ? { ...invoice, clientApproved: true, approvedAt: new Date() }
+          : invoice
+      ))
+    } catch (error) {
+      console.error('Approval failed:', error)
+      alert('Failed to approve invoice. Please try again.')
+    } finally {
+      setApproving(null)
+    }
   }
 
   if (loading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-red-500" size={32} /></div>
@@ -39,6 +60,7 @@ export default function ClientInvoices() {
               <th className="px-6 py-4 text-left">Invoice #</th>
               <th className="px-6 py-4 text-left">Amount</th>
               <th className="px-6 py-4 text-left">Status</th>
+              <th className="px-6 py-4 text-left">Approval</th>
               <th className="px-6 py-4 text-left">Due Date</th>
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
@@ -70,6 +92,32 @@ export default function ClientInvoices() {
                   >
                     {inv.status}
                   </span>
+                </td>
+                <td className="px-6 py-4 text-sm">
+                  {inv.clientApproved ? (
+                    <div className="flex items-center gap-2 text-green-400">
+                      <CheckCircle size={16} />
+                      <span>Approved</span>
+                      {inv.approvedAt && (
+                        <span className="text-xs text-gray-500">
+                          {new Date(inv.approvedAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => approveInvoice(inv._id)}
+                      disabled={approving === inv._id}
+                      className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {approving === inv._id ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <CheckCircle size={14} />
+                      )}
+                      Approve
+                    </button>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-400">
                   {inv.dueDate

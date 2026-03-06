@@ -5,7 +5,7 @@ const notificationSchema = new mongoose.Schema(
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
+        required: false  // Made optional for admin notifications
     },
 
     title: String,

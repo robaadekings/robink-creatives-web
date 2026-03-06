@@ -2,7 +2,9 @@ const Joi = require('joi');
 
 exports.createProjectSchema = Joi.object({
     title: Joi.string().required(),
-    quoteId: Joi.string().required(),
+    quoteId: Joi.string().optional(),
+    clientId: Joi.string().optional(),
+    clientEmail: Joi.string().email().optional(),
     serviceId: Joi.string().required(),
     description: Joi.string(),
     budget: Joi.number(),

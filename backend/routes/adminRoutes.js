@@ -7,6 +7,7 @@ const role = require("../middlewares/roleMiddleware");
 const dashboard = require("../controllers/adminDashboardController");
 const notif = require("../controllers/adminNotificationController");
 const adminController = require("../controllers/adminController");
+const projectController = require("../controllers/projectController");
 
 
 
@@ -63,6 +64,13 @@ router.get(
   authMiddleware,
   role("admin", "superadmin"),
   adminController.listProjects
+);
+
+router.put(
+  "/projects/:id/approve",
+  authMiddleware,
+  role("admin", "superadmin"),
+  projectController.approveProject
 );
 
 router.patch(

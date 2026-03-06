@@ -14,13 +14,18 @@ const quoteSchema = new mongoose.Schema(
 
             serviceCategory: {
             type: String,
-            enum: ['graphic_design', 'web_development'],
+            enum: ['graphic-design', 'web-development'],
             required: true,
             },
 
             serviceId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Service',
+            },
+
+            projectId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Project',
             },
 
             description: {
@@ -38,7 +43,22 @@ const quoteSchema = new mongoose.Schema(
             default: 'pending',
             },
 
-            adminResponse: String
+            adminResponse: String,
+            convertedToInvoice: {
+                type: Boolean,
+                default: false
+            },
+            invoiceId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Invoice'
+            },
+
+            clientApproved: {
+                type: Boolean,
+                default: false
+            },
+
+            approvedAt: Date
     },
 
 {timestamps: true}

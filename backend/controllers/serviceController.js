@@ -52,11 +52,14 @@ exports.deleteService = async (req, res, next) => {
 
 exports.listServices = async (req, res) => {
   try {
-    const services = await Service.find()
+    const services = await Service.find({ active: true })
       .populate("category", "name slug")
       .sort({ createdAt: -1 });
 
-    res.json(services);
+    res.json({
+      success: true,
+      data: services
+    });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch services" });
   }

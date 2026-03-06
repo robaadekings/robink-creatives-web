@@ -36,6 +36,7 @@ const projectSchema = new mongoose.Schema(
         type: String,
         enum: [
             'pending',
+            'approved',
             'in_progress',
             'waiting_client',
             'completed',
@@ -47,6 +48,17 @@ const projectSchema = new mongoose.Schema(
     assets: [String],
     deliverables: [String],
     adminNotes: String,
+
+    // References to generated documents
+    quoteId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quote',
+    },
+
+    invoiceId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Invoice',
+    },
 
     clientPortalToken: {
         type: String,

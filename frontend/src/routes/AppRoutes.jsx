@@ -29,6 +29,7 @@ import ClientDashboard from "../pages/client/Dashboard"
 import ClientProjects from "../pages/client/Project"
 import ClientProjectDetail from "../pages/client/ProjectDetail"
 import ClientInvoices from "../pages/client/Invoice"
+import ClientQuotes from "../pages/client/Quotes"
 import ClientFiles from "../pages/client/Files"
 import ClientMessages from "../pages/client/Message"
 
@@ -93,6 +94,7 @@ export default function AppRoutes() {
           <Route path="projects/:id" element={<PageWrapper><ClientProjectDetail /></PageWrapper>} />
           <Route path="projects/:projectId/messages" element={<PageWrapper><ClientMessages /></PageWrapper>} />
           <Route path="invoices" element={<PageWrapper><ClientInvoices /></PageWrapper>} />
+          <Route path="quotes" element={<PageWrapper><ClientQuotes /></PageWrapper>} />
           <Route path="files" element={<PageWrapper><ClientFiles /></PageWrapper>} />
         </Route>
 

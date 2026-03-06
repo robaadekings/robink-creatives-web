@@ -18,9 +18,12 @@ router.get('/project/:id', authMiddleware, role("client"), client.getClientProje
 router.get('/invoices', authMiddleware, role("client"), client.getClientInvoices);
 router.get('/invoice/:id', authMiddleware, role("client"), client.getClientInvoice);
 router.get('/invoice/:id/pdf', authMiddleware, role("client"), client.downloadClientInvoicePdf);
+router.put('/invoice/:id/approve', authMiddleware, role("client"), client.approveInvoice);
 
 // 🔐 Quotes
 router.get('/quotes', authMiddleware, role("client"), client.getClientQuotes);
+router.get('/quote/:id/pdf', authMiddleware, role("client"), client.downloadClientQuotePdf);
+router.put('/quote/:id/approve', authMiddleware, role("client"), client.approveQuote);
 
 // 🔐 Files
 router.get('/files', authMiddleware, role("client"), client.getClientFiles);

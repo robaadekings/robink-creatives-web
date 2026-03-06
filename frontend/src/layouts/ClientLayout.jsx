@@ -8,7 +8,8 @@ import {
   LogOut,
   Menu,
   X,
-  Globe
+  Globe,
+  Receipt
 } from "lucide-react"
 import logo from "../assets/robink-logo.png"
 import { useState } from "react"
@@ -73,6 +74,7 @@ export default function ClientLayout() {
         <nav className="space-y-2 flex-1">
           <NavLink icon={LayoutDashboard} label="Dashboard" href="/client/dashboard" />
           <NavLink icon={FolderKanban} label="Projects" href="/client/projects" />
+          <NavLink icon={Receipt} label="Quotes" href="/client/quotes" />
           <NavLink icon={FileText} label="Invoices" href="/client/invoices" />
           <NavLink icon={Download} label="Files" href="/client/files" />
         </nav>

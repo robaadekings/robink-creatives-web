@@ -79,8 +79,14 @@ export default function AdminProjects() {
   }
 
   const handleApprove = async (projectId) => {
-    await api.put(`/admin/projects/${projectId}`, { status: 'in_progress' })
-    fetchProjects()
+    try {
+      await api.put(`/admin/projects/${projectId}/approve`)
+      fetchProjects()
+      // Could add a success toast here
+    } catch (error) {
+      console.error('Approval failed:', error)
+      // Could add an error toast here
+    }
   }
 
   const handleReject = async (projectId) => {
@@ -91,6 +97,7 @@ export default function AdminProjects() {
   const stats = {
     total: projects.length,
     active: projects.filter(p => p.status === "in_progress").length,
+    approved: projects.filter(p => p.status === "approved").length,
     completed: projects.filter(p => p.status === "completed").length,
     pending: projects.filter(p => p.status === "pending").length,
     totalBudget: projects.reduce((sum, p) => sum + (p.budget || 0), 0)
@@ -148,6 +155,14 @@ export default function AdminProjects() {
 
         <motion.div
           whileHover={{ scale: 1.03 }}
+          className="bg-gradient-to-br from-emerald-600/20 to-emerald-700/10 border border-emerald-600/30 rounded-xl p-4"
+        >
+          <p className="text-gray-400 text-sm">Approved</p>
+          <p className="text-2xl font-bold text-emerald-400 mt-1">{stats.approved}</p>
+        </motion.div>
+
+        <motion.div
+          whileHover={{ scale: 1.03 }}
           className="bg-gradient-to-br from-blue-600/20 to-blue-700/10 border border-blue-600/30 rounded-xl p-4"
         >
           <p className="text-gray-400 text-sm">Completed</p>
@@ -191,6 +206,7 @@ export default function AdminProjects() {
         >
           <option value="all">All Status</option>
           <option value="in_progress">Active</option>
+          <option value="approved">Approved</option>
           <option value="completed">Completed</option>
           <option value="pending">Pending</option>
         </select>
@@ -353,6 +369,7 @@ export default function AdminProjects() {
 function StatusBadge({ status }) {
   const styles = {
     active: "from-green-600/20 to-green-700/10 border-green-600/30 text-green-400",
+    approved: "from-emerald-600/20 to-emerald-700/10 border-emerald-600/30 text-emerald-400",
     completed: "from-blue-600/20 to-blue-700/10 border-blue-600/30 text-blue-400",
     pending: "from-yellow-600/20 to-yellow-700/10 border-yellow-600/30 text-yellow-400"
   }

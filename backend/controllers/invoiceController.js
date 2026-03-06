@@ -33,6 +33,7 @@ exports.createInvoice = async (req, res, next) => {
 
         const invoice = await Invoice.create({
             ...data,
+            client: project.client, // Add client reference
             items,
             subtotal,
             tax,

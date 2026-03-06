@@ -18,10 +18,13 @@ exports.createQuote = async (req, res, next) => {
 
         const quote = await Quote.create(data);
 
-        // admin notification
+        // admin notification - different message based on context
+        const isAdminCreated = req.user && req.user.role === 'admin';
         await notify.createNotification({
-            title: "New Quote Request",
-            message: `${quote.clientName} requested a quote`,
+            title: isAdminCreated ? "Quote Created" : "New Quote Request",
+            message: isAdminCreated
+                ? `Quote created for ${quote.clientName}`
+                : `${quote.clientName} requested a quote`,
             type: "quote",
             meta: { quoteId: quote._id }
         });

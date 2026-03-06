@@ -49,6 +49,13 @@ router.put(
   projectController.updateProject
 );
 
+router.put(
+  '/:id/approve',
+  authMiddleware,
+  role('admin'),
+  projectController.approveProject
+);
+
 router.delete(
   '/:id',
   authMiddleware,
