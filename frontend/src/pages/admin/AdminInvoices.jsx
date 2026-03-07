@@ -9,6 +9,7 @@ export default function AdminInvoices() {
   const [error, setError] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [isDownloading, setIsDownloading] = useState(null);
 
   useEffect(() => {
     fetchInvoices()
@@ -37,8 +38,32 @@ export default function AdminInvoices() {
     }
   }
 
-  const downloadPDF = (id) => {
-    window.open(`${import.meta.env.VITE_API_URL}/admin/invoices/${id}/pdf`)
+  // FIXED DOWNLOAD FUNCTION
+  const downloadPDF = async (id) => {
+    try {
+      setIsDownloading(id);
+      // We use '/invoices' because your backend routes this via invoiceRoutes
+      const response = await api.get(`/invoices/${id}/pdf`, {
+        responseType: 'blob',
+      });
+
+      // Create a blob URL and trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `invoice-${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Failed to download PDF. Please ensure the backend controller is working.");
+    } finally {
+      setIsDownloading(null);
+    }
   }
 
   const filteredInvoices = invoices.filter(inv => {
@@ -84,7 +109,6 @@ export default function AdminInvoices() {
 
   return (
     <div className="space-y-6">
-
       {/* Header */}
       <div>
         <h2 className="text-3xl font-bold text-white">Invoices Management</h2>
@@ -93,42 +117,23 @@ export default function AdminInvoices() {
 
       {/* Stats Cards */}
       <div className="grid md:grid-cols-5 gap-4">
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          className="bg-white/5 border border-white/10 rounded-xl p-4"
-        >
+        <motion.div whileHover={{ scale: 1.03 }} className="bg-white/5 border border-white/10 rounded-xl p-4">
           <p className="text-gray-400 text-sm">Total Invoices</p>
           <p className="text-2xl font-bold text-white mt-1">{stats.total}</p>
         </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          className="bg-gradient-to-br from-green-600/20 to-green-700/10 border border-green-600/30 rounded-xl p-4"
-        >
+        <motion.div whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-green-600/20 to-green-700/10 border border-green-600/30 rounded-xl p-4">
           <p className="text-gray-400 text-sm">Paid</p>
           <p className="text-2xl font-bold text-green-400 mt-1">{stats.paid}</p>
         </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          className="bg-gradient-to-br from-yellow-600/20 to-yellow-700/10 border border-yellow-600/30 rounded-xl p-4"
-        >
+        <motion.div whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-yellow-600/20 to-yellow-700/10 border border-yellow-600/30 rounded-xl p-4">
           <p className="text-gray-400 text-sm">Pending</p>
           <p className="text-2xl font-bold text-yellow-400 mt-1">{stats.pending}</p>
         </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          className="bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/30 rounded-xl p-4"
-        >
+        <motion.div whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/30 rounded-xl p-4">
           <p className="text-gray-400 text-sm">Overdue</p>
           <p className="text-2xl font-bold text-red-400 mt-1">{stats.overdue}</p>
         </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          className="bg-gradient-to-br from-blue-600/20 to-blue-700/10 border border-blue-600/30 rounded-xl p-4"
-        >
+        <motion.div whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-blue-600/20 to-blue-700/10 border border-blue-600/30 rounded-xl p-4">
           <p className="text-gray-400 text-sm">Total Value</p>
           <p className="text-2xl font-bold text-blue-400 mt-1">${(stats.totalAmount || 0).toLocaleString()}</p>
         </motion.div>
@@ -146,7 +151,6 @@ export default function AdminInvoices() {
             className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-red-600 focus:outline-none transition text-white placeholder-gray-500"
           />
         </div>
-
         <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
           <Filter size={20} className="text-gray-500" />
           <select
@@ -163,11 +167,7 @@ export default function AdminInvoices() {
       </div>
 
       {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-red-500/20 border border-red-500/40 text-red-400 p-4 rounded-xl flex items-center gap-3"
-        >
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-500/20 border border-red-500/40 text-red-400 p-4 rounded-xl flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-red-400"></div>
           {error}
         </motion.div>
@@ -175,22 +175,12 @@ export default function AdminInvoices() {
 
       {/* Invoices Table */}
       {filteredInvoices.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
           <AlertCircle className="mx-auto text-gray-500 mb-4" size={48} />
-          <p className="text-gray-400">
-            {searchTerm || statusFilter !== "all" ? "No invoices match your filters" : "No invoices yet"}
-          </p>
+          <p className="text-gray-400">{searchTerm || statusFilter !== "all" ? "No invoices match your filters" : "No invoices yet"}</p>
         </motion.div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
           <table className="w-full">
             <thead className="border-b border-white/10 bg-white/5">
               <tr className="text-gray-400 text-sm font-semibold">
@@ -202,22 +192,12 @@ export default function AdminInvoices() {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {filteredInvoices.map((inv, idx) => (
-                <tr
-                  key={inv._id}
-                  className={`border-b border-white/5 ${
-                    idx % 2 === 0 ? "bg-white/[2%]" : ""
-                  } hover:bg-white/10 transition`}
-                >
-                  <td className="px-6 py-4 text-sm font-mono text-red-400 font-semibold">
-                    {inv.invoiceNumber}
-                  </td>
+                <tr key={inv._id} className={`border-b border-white/5 ${idx % 2 === 0 ? "bg-white/[2%]" : ""} hover:bg-white/10 transition`}>
+                  <td className="px-6 py-4 text-sm font-mono text-red-400 font-semibold">{inv.invoiceNumber}</td>
                   <td className="px-6 py-4 text-sm text-white">{inv.clientName}</td>
-                  <td className="px-6 py-4 text-sm font-semibold text-white">
-                    ${(inv.total || 0).toLocaleString()} {inv.currency || "USD"}
-                  </td>
+                  <td className="px-6 py-4 text-sm font-semibold text-white">${(inv.total || 0).toLocaleString()} {inv.currency || "USD"}</td>
                   <td className="px-6 py-4 text-sm">
                     <div className="flex items-center gap-2">
                       {getStatusIcon(inv.status)}
@@ -225,11 +205,8 @@ export default function AdminInvoices() {
                         value={inv.status}
                         onChange={(e) => updateStatus(inv._id, e.target.value)}
                         className={`px-3 py-1 rounded-full text-xs font-semibold border-0 focus:outline-none cursor-pointer transition-all ${
-                          inv.status === "paid"
-                            ? "bg-green-500/20 text-green-400"
-                            : inv.status === "pending"
-                            ? "bg-yellow-500/20 text-yellow-400"
-                            : "bg-red-500/20 text-red-400"
+                          inv.status === "paid" ? "bg-green-500/20 text-green-400" : 
+                          inv.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : "bg-red-500/20 text-red-400"
                         }`}
                       >
                         <option value="pending">Pending</option>
@@ -238,18 +215,17 @@ export default function AdminInvoices() {
                       </select>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-400">
-                    {inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : "—"}
-                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-400">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : "—"}</td>
                   <td className="px-6 py-4 text-right">
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => downloadPDF(inv._id)}
-                      className="p-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg transition"
+                      disabled={isDownloading === inv._id}
+                      className="p-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg transition disabled:opacity-50"
                       title="Download PDF"
                     >
-                      <Download size={18} />
+                      {isDownloading === inv._id ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
                     </motion.button>
                   </td>
                 </tr>
@@ -258,7 +234,6 @@ export default function AdminInvoices() {
           </table>
         </motion.div>
       )}
-
     </div>
   )
 }

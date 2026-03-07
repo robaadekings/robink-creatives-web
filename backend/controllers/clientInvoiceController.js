@@ -1,91 +1,44 @@
 const Invoice = require("../models/Invoice");
-const generatePdf = require("../utils/invoicePdf"); // your existing PDF stream generator
+const { generateInvoicePdf } = require("../utils/invoicePdf"); // Correct Destructuring
 
-
-// ===============================
-// GET invoice by token
-// ===============================
 exports.getInvoiceByToken = async (req, res, next) => {
-  try {
-    const invoice = await Invoice.findOne({
-      portalToken: req.params.token
-    }).populate("projectId");
+    try {
+        const invoice = await Invoice.findOne({ portalToken: req.params.token }).populate("projectId");
+        if (!invoice) return res.status(404).json({ success: false, message: "Invoice not found" });
 
-    if (!invoice) {
-      return res.status(404).json({
-        success: false,
-        message: "Invoice not found"
-      });
-    }
-
-    // auto mark viewed
-    if (invoice.status === "Sent") {
-      invoice.status = "Viewed";
-      invoice.lastViewedAt = new Date();
-      await invoice.save();
-    }
-
-    res.json({
-      success: true,
-      invoice
-    });
-
-  } catch (err) {
-    next(err);
-  }
+        if (invoice.status === "Sent") {
+            invoice.status = "Viewed";
+            invoice.lastViewedAt = new Date();
+            await invoice.save();
+        }
+        res.json({ success: true, invoice });
+    } catch (err) { next(err); }
 };
 
-
-// ===============================
-// MARK VIEWED
-// ===============================
 exports.markViewed = async (req, res, next) => {
-  try {
-    const invoice = await Invoice.findOne({
-      portalToken: req.params.token
-    });
-
-    if (!invoice) {
-      return res.status(404).json({
-        success: false
-      });
-    }
-
-    invoice.status = "Viewed";
-    invoice.lastViewedAt = new Date();
-    await invoice.save();
-
-    res.json({ success: true });
-
-  } catch (err) {
-    next(err);
-  }
+    try {
+        const invoice = await Invoice.findOne({ portalToken: req.params.token });
+        if (!invoice) return res.status(404).json({ success: false });
+        invoice.status = "Viewed";
+        invoice.lastViewedAt = new Date();
+        await invoice.save();
+        res.json({ success: true });
+    } catch (err) { next(err); }
 };
 
-
-// ===============================
-// DOWNLOAD PDF
-// ===============================
 exports.downloadPdf = async (req, res, next) => {
-  try {
-    const invoice = await Invoice.findOne({
-      portalToken: req.params.token
-    });
+    try {
+        // Look up by portalToken as per your route
+        const invoice = await Invoice.findOne({ portalToken: req.params.token });
 
-    if (!invoice) {
-      return res.status(404).json({
-        success: false
-      });
-    }
+        if (!invoice) {
+            return res.status(404).json({ success: false, message: "Invoice not found" });
+        }
 
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=invoice-${invoice.invoiceNumber}.pdf`
-    );
+        const filename = invoice.invoiceNumber || `INV-${invoice._id.toString().slice(-6)}`;
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename=${filename}.pdf`);
 
-    generatePdf(invoice, res); // stream version
-
-  } catch (err) {
-    next(err);
-  }
+        generateInvoicePdf(invoice, res); 
+    } catch (err) { next(err); }
 };

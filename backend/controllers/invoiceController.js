@@ -1,7 +1,7 @@
 const Invoice = require('../models/Invoice');
 const Project = require('../models/Project');
 const ApiError = require('../utils/ApiError');
-const generateInvoicePdf = require('../utils/invoicePdf');
+const { generateInvoicePdf } = require('../utils/invoicePdf');
 const { sendInvoiceEmail } = require("../services/invoiceEmailService");
 const notify = require("../services/notificationService");
 

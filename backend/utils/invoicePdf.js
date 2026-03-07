@@ -5,304 +5,189 @@ const Resend = require('resend').Resend;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
- * Generate PDF and pipe directly to response stream.
- * @param {Object} invoice - The invoice data.
- * @param {Object} res - Express response object.
+ * GENERATE PDF STREAM
+ * Used for direct downloads from the browser.
  */
 function generateInvoicePdf(invoice, res) {
-  const doc = new PDFDocument({ margin: 40 });
-  const brandColor = '#8B1C24';
-
-  doc.pipe(res);
-
-  // ===== BRAND HEADER WITH COLOR =====
-  doc.fillColor(brandColor);
-  doc.rect(0, 0, doc.page.width, 80).fill(brandColor);
-  
-  doc.fillColor('white');
-  doc.fontSize(28).font('Helvetica-Bold').text("ROBINK CREATIVES", 50, 20);
-  doc.fontSize(14).text("Invoice", 50, 55);
-  
-  doc.fillColor('black');
-  doc.moveDown(8);
-
-  // ===== INVOICE META INFO =====
-  const invoiceNum = invoice.invoiceNumber || invoice._id.toString().slice(-8).toUpperCase();
-  const invoiceDate = new Date(invoice.issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  const dueDate = new Date(invoice.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  
-  doc.fontSize(11).font('Helvetica');
-  doc.text(`Invoice #${invoiceNum}`, { align: 'right' });
-  doc.text(`Issue Date: ${invoiceDate}`, { align: 'right' });
-  doc.text(`Due Date: ${dueDate}`, { align: 'right' });
-  doc.moveDown(1);
-
-  // ===== BILL TO BOX =====
-  doc.fillColor(brandColor).fontSize(12).font('Helvetica-Bold');
-  doc.rect(40, doc.y, 250, 60).stroke(brandColor);
-  doc.fillColor(brandColor).fontSize(13).font('Helvetica-Bold').text("BILL TO", 50, doc.y + 8);
-  
-  doc.fillColor('black').fontSize(11).font('Helvetica');
-  doc.text(invoice.clientName, 50, doc.y + 22);
-  doc.text(invoice.clientEmail, 50, doc.y);  
-  doc.text(invoice.clientAddress || '', 50, doc.y);
-  doc.moveDown(4);
-
-  // ===== SERVICES TABLE =====
-  const tableTop = doc.y;
-  const itemX = 40;
-  const qtyX = 350;
-  const rateX = 420;
-  const amountX = 480;
-
-  // Table headers
-  doc.fillColor(brandColor).fontSize(12).font('Helvetica-Bold');
-  doc.text("DESCRIPTION", itemX, tableTop);
-  doc.text("QTY", qtyX, tableTop);
-  doc.text("RATE", rateX, tableTop);
-  doc.text("AMOUNT", amountX, tableTop);
-  
-  doc.moveTo(40, doc.y + 15).lineTo(550, doc.y + 15).stroke(brandColor);
-  doc.moveDown(2);
-
-  // Table rows
-  doc.fillColor('black').fontSize(10).font('Helvetica');
-  let yPosition = doc.y;
-  
-  if (invoice.services && invoice.services.length > 0) {
-    invoice.services.forEach((service, index) => {
-      const itemName = service.name || service.description || 'Service';
-      const quantity = service.quantity || 1;
-      const rate = service.rate || service.price || 0;
-      const amount = quantity * rate;
-
-      doc.text(itemName, itemX, yPosition);
-      doc.text(quantity.toString(), qtyX, yPosition);
-      doc.text(`$${rate.toFixed(2)}`, rateX, yPosition);
-      doc.text(`$${amount.toFixed(2)}`, amountX, yPosition);
-      
-      yPosition += 20;
-    });
-  } else {
-    // Fallback if no services array
-    doc.text("Design Services", itemX, yPosition);
-    doc.text("1", qtyX, yPosition);
-    doc.text(`$${(invoice.total || 0).toFixed(2)}`, rateX, yPosition);
-    doc.text(`$${(invoice.total || 0).toFixed(2)}`, amountX, yPosition);
-  }
-
-  doc.moveDown(2);
-
-  // ===== SUMMARY =====
-  const summaryX = 400;
-  doc.fontSize(12).font('Helvetica-Bold').fillColor(brandColor);
-  doc.text(`SUBTOTAL: $${(invoice.subtotal || invoice.total || 0).toFixed(2)}`, summaryX);
-  
-  if (invoice.tax) {
-    doc.text(`TAX: $${invoice.tax.toFixed(2)}`, summaryX);
-  }
-  
-  doc.fontSize(14).font('Helvetica-Bold').fillColor(brandColor);
-  doc.text(`TOTAL: $${(invoice.total || 0).toFixed(2)}`, summaryX);
-  
-  doc.moveDown(2);
-  doc.fontSize(10).fillColor('black').font('Helvetica');
-  if (invoice.notes) {
-    doc.text(`Notes: ${invoice.notes}`);
-    doc.moveDown(1);
-  }
-
-  // ===== PAYMENT INFO =====
-  doc.fontSize(10).font('Helvetica').fillColor('gray');
-  doc.text("_".repeat(80), { align: 'center' });
-  
-  doc.fontSize(9);
-  doc.text("Payment Terms & Banking Details", { align: 'center' });
-  doc.text("Please remit payment to: Robink Creatives | Bank: [Your Bank]", { align: 'center' });
-  doc.text("Account: [Your Account] | Reference: Invoice # " + invoiceNum, { align: 'center' });
-  
-  doc.moveDown(1);
-  doc.fontSize(9).text("Thank you for your business!", { align: 'center' });
-  doc.text("info@robinkcreatives.com | www.robinkcreatives.com", { align: 'center' });
-
-  doc.end();
-}
-
-/**
- * Generate PDF buffer for an invoice.
- * @param {Object} invoice - The invoice data.
- * @returns {Promise<Buffer>} - PDF as a buffer.
- */
-function generateInvoicePdfBuffer(invoice) {
-  return new Promise((resolve) => {
-    const doc = new PDFDocument({ margin: 40 });
-    const buffers = [];
+    const doc = new PDFDocument({ margin: 40, size: 'A4', bufferPages: true });
     const brandColor = '#8B1C24';
+    const textColor = '#1a1a1a';
+    const lightText = '#666666';
+    const tableBg = '#FBFBFB'; 
 
-    doc.on("data", buffers.push.bind(buffers));
-    doc.on("end", () => resolve(Buffer.concat(buffers)));
+    // Pipe to the response stream
+    doc.pipe(res);
 
-    // ===== BRAND HEADER WITH COLOR =====
-    doc.fillColor(brandColor);
-    doc.rect(0, 0, doc.page.width, 80).fill(brandColor);
+    // --- 1. PREMIUM BRANDING & SIDEBAR ---
+    doc.rect(0, 0, 4, 842).fill(brandColor); // Elegant left accent line
+
+    doc.fillColor(textColor).fontSize(22).font('Helvetica-Bold').text("ROBINK", 50, 50, { continued: true });
+    doc.fillColor(brandColor).text(" CREATIVES");
+    doc.fillColor(lightText).fontSize(9).font('Helvetica').text("Premium Digital Artistry & Development", 50, 75);
+    doc.text("www.robinkcreatives.com | billing@robinkcreatives.com", 50, 88);
+
+    doc.fillColor(textColor).fontSize(26).font('Helvetica-Bold').text("INVOICE", 350, 50, { align: 'right' });
+    doc.fontSize(10).fillColor(brandColor).text(`# ${invoice.invoiceNumber || invoice._id.toString().slice(-8).toUpperCase()}`, 350, 80, { align: 'right' });
+
+    // --- 2. INFORMATION BAR ---
+    doc.moveTo(50, 130).lineTo(550, 130).strokeColor('#EEEEEE').lineWidth(1).stroke();
+
+    // Client Info
+    doc.fillColor(lightText).fontSize(8).font('Helvetica-Bold').text("BILL TO", 50, 150);
+    doc.fillColor(textColor).fontSize(11).font('Helvetica-Bold').text(invoice.clientName || 'Valued Client', 50, 165);
+    doc.font('Helvetica').fontSize(9).fillColor(lightText).text(invoice.clientEmail || '', 50, 180);
+    if (invoice.clientAddress) {
+        doc.text(invoice.clientAddress, 50, 195, { width: 200 });
+    }
+
+    // Dates & Currency
+    doc.fillColor(lightText).fontSize(8).font('Helvetica-Bold').text("DATE OF ISSUE", 350, 150, { align: 'right' });
+    doc.fillColor(textColor).fontSize(9).font('Helvetica').text(new Date(invoice.issueDate).toLocaleDateString('en-GB'), 350, 165, { align: 'right' });
+    doc.fillColor(lightText).fontSize(8).font('Helvetica-Bold').text("DUE DATE", 350, 185, { align: 'right' });
+    doc.fillColor(brandColor).fontSize(9).text(new Date(invoice.dueDate).toLocaleDateString('en-GB'), 350, 200, { align: 'right' });
+
+    // --- 3. THE PREMIUM ZEBRA TABLE ---
+    const tableTop = 260;
+    const colDesc = 60;
+    const colQty = 330;
+    const colPrice = 390;
+    const colTotal = 480;
+
+    // Header Row
+    doc.rect(50, tableTop, 510, 30).fill('#F4F4F4');
+    doc.fillColor(textColor).font('Helvetica-Bold').fontSize(9);
+    doc.text("DESCRIPTION", colDesc, tableTop + 11);
+    doc.text("QTY", colQty, tableTop + 11);
+    doc.text("UNIT PRICE", colPrice, tableTop + 11, { width: 75, align: 'right' });
+    doc.text("AMOUNT", colTotal, tableTop + 11, { width: 75, align: 'right' });
+
+    // Table Content Rows
+    let y = tableTop + 30;
+    const items = invoice.items || invoice.services || [];
     
-    doc.fillColor('white');
-    doc.fontSize(28).font('Helvetica-Bold').text("ROBINK CREATIVES", 50, 20);
-    doc.fontSize(14).text("Invoice", 50, 55);
-    
-    doc.fillColor('black');
-    doc.moveDown(8);
+    items.forEach((item, i) => {
+        const itemHeight = 35;
+        // Zebra Striping (Light background for alternating rows)
+        if (i % 2 === 0) {
+            doc.rect(50, y, 510, itemHeight).fill(tableBg);
+        }
 
-    // ===== INVOICE META INFO =====
-    const invoiceNum = invoice.invoiceNumber || invoice._id.toString().slice(-8).toUpperCase();
-    const invoiceDate = new Date(invoice.issueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const dueDate = new Date(invoice.dueDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    
-    doc.fontSize(11).font('Helvetica');
-    doc.text(`Invoice #${invoiceNum}`, { align: 'right' });
-    doc.text(`Issue Date: ${invoiceDate}`, { align: 'right' });
-    doc.text(`Due Date: ${dueDate}`, { align: 'right' });
-    doc.moveDown(1);
-
-    // ===== BILL TO BOX =====
-    doc.fillColor(brandColor).fontSize(12).font('Helvetica-Bold');
-    doc.rect(40, doc.y, 250, 60).stroke(brandColor);
-    doc.fillColor(brandColor).fontSize(13).font('Helvetica-Bold').text("BILL TO", 50, doc.y + 8);
-    
-    doc.fillColor('black').fontSize(11).font('Helvetica');
-    doc.text(invoice.clientName, 50, doc.y + 22);
-    doc.text(invoice.clientEmail, 50, doc.y + 35);
-    doc.text(invoice.clientAddress || '', 50, doc.y + 48);
-    doc.moveDown(4);
-
-    // ===== SERVICES TABLE =====
-    const tableTop = doc.y;
-    const itemX = 40;
-    const qtyX = 350;
-    const rateX = 420;
-    const amountX = 480;
-
-    // Table headers
-    doc.fillColor(brandColor).fontSize(12).font('Helvetica-Bold');
-    doc.text("DESCRIPTION", itemX, tableTop);
-    doc.text("QTY", qtyX, tableTop);
-    doc.text("RATE", rateX, tableTop);
-    doc.text("AMOUNT", amountX, tableTop);
-    
-    doc.moveTo(40, doc.y + 15).lineTo(550, doc.y + 15).stroke(brandColor);
-    doc.moveDown(2);
-
-    // Table rows
-    doc.fillColor('black').fontSize(10).font('Helvetica');
-    let yPosition = doc.y;
-    
-    if (invoice.services && invoice.services.length > 0) {
-      invoice.services.forEach((service, index) => {
-        const itemName = service.name || service.description || 'Service';
-        const quantity = service.quantity || 1;
-        const rate = service.rate || service.price || 0;
-        const amount = quantity * rate;
-
-        doc.text(itemName, itemX, yPosition);
-        doc.text(quantity.toString(), qtyX, yPosition);
-        doc.text(`$${rate.toFixed(2)}`, rateX, yPosition);
-        doc.text(`$${amount.toFixed(2)}`, amountX, yPosition);
+        doc.fillColor(textColor).font('Helvetica').fontSize(10);
+        doc.text(item.name || item.description || "Project Service", colDesc, y + 12, { width: 250 });
         
-        yPosition += 20;
-      });
-    } else {
-      // Fallback if no services array
-      doc.text("Design Services", itemX, yPosition);
-      doc.text("1", qtyX, yPosition);
-      doc.text(`$${(invoice.total || 0).toFixed(2)}`, rateX, yPosition);
-      doc.text(`$${(invoice.total || 0).toFixed(2)}`, amountX, yPosition);
-    }
+        doc.fillColor(lightText).text(item.quantity.toString(), colQty, y + 12);
+        
+        const price = item.unitPrice || item.rate || 0;
+        doc.text(`$${price.toFixed(2)}`, colPrice, y + 12, { width: 75, align: 'right' });
+        
+        const lineTotal = (item.quantity || 1) * price;
+        doc.fillColor(textColor).font('Helvetica-Bold').text(`$${lineTotal.toFixed(2)}`, colTotal, y + 12, { width: 75, align: 'right' });
 
-    doc.moveDown(2);
+        y += itemHeight;
+    });
 
-    // ===== SUMMARY =====
-    const summaryX = 400;
-    doc.fontSize(12).font('Helvetica-Bold').fillColor(brandColor);
-    doc.text(`SUBTOTAL: $${(invoice.subtotal || invoice.total || 0).toFixed(2)}`, summaryX);
-    
+    // --- 4. TOTALS SECTION ---
+    y += 20;
+    doc.fillColor(lightText).font('Helvetica').fontSize(10).text("Subtotal", 350, y);
+    doc.fillColor(textColor).text(`$${(invoice.subtotal || 0).toFixed(2)}`, colTotal, y, { width: 75, align: 'right' });
+
     if (invoice.tax) {
-      doc.text(`TAX: $${invoice.tax.toFixed(2)}`, summaryX);
-    }
-    
-    doc.fontSize(14).font('Helvetica-Bold').fillColor(brandColor);
-    doc.text(`TOTAL: $${(invoice.total || 0).toFixed(2)}`, summaryX);
-    
-    doc.moveDown(2);
-    doc.fontSize(10).fillColor('black').font('Helvetica');
-    if (invoice.notes) {
-      doc.text(`Notes: ${invoice.notes}`);
-      doc.moveDown(1);
+        y += 20;
+        doc.fillColor(lightText).text(`Tax (${invoice.taxRate || 0}%)`, 350, y);
+        doc.fillColor(textColor).text(`$${invoice.tax.toFixed(2)}`, colTotal, y, { width: 75, align: 'right' });
     }
 
-    // ===== PAYMENT INFO =====
-    doc.fontSize(10).font('Helvetica').fillColor('gray');
-    doc.text("_".repeat(80), { align: 'center' });
+    // High-Contrast Total Box
+    y += 35;
+    doc.rect(340, y, 220, 45).fill(brandColor);
+    doc.fillColor('#FFFFFF').font('Helvetica-Bold').fontSize(10).text("TOTAL AMOUNT", 355, y + 17);
+    doc.fontSize(16).text(`$${(invoice.total || 0).toFixed(2)}`, colTotal - 5, y + 15, { width: 80, align: 'right' });
+
+    // --- 5. FOOTER & BANKING ---
+    const footerY = 740;
+    doc.fillColor('#EEEEEE').rect(50, footerY - 10, 500, 1).fill();
     
-    doc.fontSize(9);
-    doc.text("Payment Terms & Banking Details", { align: 'center' });
-    doc.text("Please remit payment to: Robink Creatives | Bank: [Your Bank]", { align: 'center' });
-    doc.text("Account: [Your Account] | Reference: Invoice # " + invoiceNum, { align: 'center' });
-    
-    doc.moveDown(1);
-    doc.fontSize(9).text("Thank you for your business!", { align: 'center' });
-    doc.text("info@robinkcreatives.com | www.robinkcreatives.com", { align: 'center' });
+    doc.fillColor(textColor).fontSize(9).font('Helvetica-Bold').text("PAYMENT INSTRUCTIONS", 50, footerY);
+    doc.fillColor(lightText).fontSize(8).font('Helvetica').text("Please remit payment via Bank Transfer / Wire within 15 days.", 50, footerY + 12);
+    doc.text(`Beneficiary: Robink Creatives  |  Bank: ${invoice.bankName || 'International Business Bank'}`, 50, footerY + 22);
+    doc.text(`SWIFT/BIC: ${invoice.swiftCode || 'ROBINKINTL'}  |  AC: ${invoice.accountNumber || '********'}`, 50, footerY + 32);
+
+    doc.fillColor(brandColor).fontSize(10).font('Helvetica-Bold').text("Excellence in every pixel.", 350, footerY, { align: 'right' });
+    doc.fillColor(lightText).fontSize(8).text("Thank you for choosing Robink Creatives.", 350, footerY + 12, { align: 'right' });
 
     doc.end();
-  });
 }
 
 /**
- * Save PDF buffer to a file (optional).
- * @param {Buffer} pdfBuffer - PDF buffer.
- * @param {string} filePath - Where to save the file.
+ * GENERATE PDF BUFFER
+ * Used for creating an attachment to send via email.
  */
-function saveInvoicePdfToFile(pdfBuffer, filePath) {
-  fs.writeFileSync(filePath, pdfBuffer);
-  console.log(`Invoice saved to ${filePath}`);
+function generateInvoicePdfBuffer(invoice) {
+    return new Promise((resolve, reject) => {
+        const doc = new PDFDocument({ margin: 40, size: 'A4' });
+        const buffers = [];
+        
+        doc.on("data", buffers.push.bind(buffers));
+        doc.on("end", () => resolve(Buffer.concat(buffers)));
+        doc.on("error", (err) => reject(err));
+
+        // Use a wrapper or the same logic to draw the PDF
+        // Note: For DRY code, you can move the drawing logic to a separate function
+        // For this file, we call generateInvoicePdf passing a mock response object
+        generateInvoicePdf(invoice, {
+            pipe: () => {},
+            on: () => {},
+            end: () => doc.end(),
+            // Mocking the write behavior for the buffer
+            write: (chunk) => doc.write(chunk)
+        });
+    });
 }
 
 /**
- * Send invoice via Resend email with PDF attachment.
- * @param {Object} invoice - The invoice data.
+ * SEND EMAIL WITH ATTACHMENT
+ * Powered by Resend.
  */
 async function sendInvoiceEmail(invoice) {
-  const pdfBuffer = await generateInvoicePdfBuffer(invoice);
+    try {
+        const pdfBuffer = await generateInvoicePdfBuffer(invoice);
+        const fileName = `Invoice_${invoice.invoiceNumber || invoice._id}.pdf`;
 
-  // Optional: save a copy on disk
-  const filePath = `invoices/Invoice-${invoice._id}.pdf`;
-  saveInvoicePdfToFile(pdfBuffer, filePath);
+        const response = await resend.emails.send({
+            from: "Robink Creatives <billing@robinkcreatives.com>",
+            to: invoice.clientEmail,
+            subject: `Invoice ${invoice.invoiceNumber || 'New'} from Robink Creatives`,
+            html: `
+                <div style="font-family: 'Helvetica', sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+                    <h2 style="color: #8B1C24;">Invoice Received</h2>
+                    <p>Dear ${invoice.clientName},</p>
+                    <p>We hope you are well. Please find your invoice attached for your recent project.</p>
+                    <hr style="border: none; border-top: 1px solid #eee;" />
+                    <p><strong>Total Amount:</strong> $${invoice.total.toFixed(2)}</p>
+                    <p><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
+                    <hr style="border: none; border-top: 1px solid #eee;" />
+                    <p style="font-size: 12px; color: #666;">If you have any questions, feel free to contact our billing team.</p>
+                    <p>Best regards,<br/><strong>The Robink Creatives Team</strong></p>
+                </div>
+            `,
+            attachments: [
+                {
+                    filename: fileName,
+                    content: pdfBuffer,
+                },
+            ],
+        });
 
-  // Send via Resend
-  try {
-    const response = await resend.emails.send({
-      from: "Robink Creatives <onboarding@resend.dev>",
-      to: invoice.clientEmail,
-      subject: `Invoice #${invoice._id}`,
-      html: `<p>Dear ${invoice.clientName},</p>
-             <p>Please find attached your invoice.</p>`,
-      attachments: [
-        {
-          filename: `Invoice-${invoice._id}.pdf`,
-          content: pdfBuffer,
-          type: "application/pdf",
-        },
-      ],
-    });
-
-    console.log("Email sent:", response);
-  } catch (error) {
-    console.error("Error sending invoice:", error);
-  }
+        console.log("Email sent successfully:", response.id);
+        return response;
+    } catch (error) {
+        console.error("Failed to send invoice email:", error);
+        throw error;
+    }
 }
 
-module.exports = {
-  generateInvoicePdf,
-  generateInvoicePdfBuffer,
-  saveInvoicePdfToFile,
-  sendInvoiceEmail,
+module.exports = { 
+    generateInvoicePdf, 
+    generateInvoicePdfBuffer, 
+    sendInvoiceEmail 
 };
