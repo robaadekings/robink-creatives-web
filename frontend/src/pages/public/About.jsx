@@ -17,7 +17,7 @@ export default function About() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#1a1f2e] to-[#0a0e14] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#1a0a0a] to-[#0a0e14] text-white">
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center px-6 py-24">
         <motion.img
@@ -30,7 +30,7 @@ export default function About() {
         />
 
         <motion.h1
-          className="text-6xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent"
+          className="text-6xl font-bold mb-6 text-center bg-gradient-to-r from-[#D4AF37] to-[#8B0000] bg-clip-text text-transparent"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -64,7 +64,7 @@ export default function About() {
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
             >
-              <stat.icon className="w-12 h-12 mx-auto mb-4 text-purple-400" />
+              <stat.icon className="w-12 h-12 mx-auto mb-4 text-[#D4AF37]" />
               <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
               <div className="text-gray-400">{stat.label}</div>
             </motion.div>
@@ -81,13 +81,13 @@ export default function About() {
       >
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
           <div className="space-y-6">
-            <h2 className="text-4xl font-bold text-purple-400">Our Mission</h2>
+            <h2 className="text-4xl font-bold text-[#8B0000]">Our Mission</h2>
             <p className="text-gray-300 text-lg leading-relaxed">
               To empower ambitious brands and innovative companies with world-class digital solutions that merge strategic design, creative excellence, and engineering precision—delivering measurable business growth and unforgettable user experiences.
             </p>
           </div>
           <div className="space-y-6">
-            <h2 className="text-4xl font-bold text-blue-400">Our Vision</h2>
+            <h2 className="text-4xl font-bold text-[#D4AF37]">Our Vision</h2>
             <p className="text-gray-300 text-lg leading-relaxed">
               To be the most trusted partner for brands seeking digital transformation—recognized globally for our commitment to innovation, quality, and client success. We envision a future where premium digital design and engineering are accessible to every ambitious business.
             </p>
@@ -108,12 +108,12 @@ export default function About() {
             {values.map((value, index) => (
               <motion.div
                 key={value.title}
-                className="p-8 rounded-2xl bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300"
+                className="p-8 rounded-2xl bg-gradient-to-br from-[#8B0000]/20 to-[#D4AF37]/20 border border-[#D4AF37]/20 hover:border-[#D4AF37]/40 transition-all duration-300"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
               >
-                <value.icon className="w-16 h-16 mx-auto mb-6 text-purple-400" />
+                <value.icon className="w-16 h-16 mx-auto mb-6 text-[#D4AF37]" />
                 <h3 className="text-2xl font-semibold mb-4 text-white">{value.title}</h3>
                 <p className="text-gray-300">{value.desc}</p>
               </motion.div>
@@ -134,7 +134,7 @@ export default function About() {
           <p className="text-gray-300 text-lg mb-8">
             Let's collaborate and create something extraordinary together.
           </p>
-          <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full font-semibold text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+          <button className="px-8 py-4 bg-gradient-to-r from-[#8B0000] to-[#D4AF37] rounded-full font-semibold text-white hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8B0000]/20">
             Start Your Project
           </button>
         </div>

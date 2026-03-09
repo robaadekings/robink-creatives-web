@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
-import { Menu, X, Facebook, Linkedin, Github } from "lucide-react"
+import { Menu, X, Facebook, Linkedin, Github, MessageCircle } from "lucide-react"
 import logo from "../assets/robink-logo.png"
 
 export default function PublicLayout() {
@@ -123,18 +123,18 @@ export default function PublicLayout() {
               </p>
 
               <div className="flex gap-2 justify-center md:justify-start mt-6">
-                <a href="#" className="p-3 rounded-lg bg-[#0A66C2] text-white hover:bg-[#004182] transition" title="LinkedIn">
+                <a href="https://linkedin.com/company/robink-creatives" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg bg-[#0A66C2] text-white hover:bg-[#004182] transition" title="LinkedIn">
                   <Linkedin size={18} />
                 </a>
-                <a href="#" className="p-3 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition" title="WhatsApp">
+                <a href="https://wa.me/254769505060" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg bg-[#25D366] text-white hover:opacity-90 transition" title="WhatsApp">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" className="h-4 w-4" fill="currentColor" aria-hidden="true">
                     <path d="M380.9 97.1C339-4.8 240.5-13.6 168.7 44.7 96.9 102.9 79.7 206.8 117.1 283.2L48 464l188.8-68.9c74.5 39.4 168.8 25.6 226-47.4 57.3-73 48.9-168.7-82-252.6zM224 392c-45.9 0-88.6-16.1-122-45.4l-1.9-1.6-82.9 30.2 28.1-83.1-1.7-2C50.7 245.1 63.9 191 96.5 157.6c35.4-36.9 88-52.2 138.8-40.6 50.9 11.6 89 47.1 102.3 96.2 9.9 36.3 5 74.1-14.4 104.4-19.4 30.4-51.5 50.8-89.2 57.5-6 1.2-12.2 1.8-18.2 1.8z" />
                   </svg>
                 </a>
-                <a href="#" className="p-3 rounded-lg bg-[#1877F2] text-white hover:bg-[#0a66c2] transition" title="Facebook">
+                <a href="https://facebook.com/robinkcreatives" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg bg-[#1877F2] text-white hover:bg-[#0a66c2] transition" title="Facebook">
                   <Facebook size={18} />
                 </a>
-                <a href="#" className="p-3 rounded-lg bg-gray-900 text-white hover:bg-black transition" title="GitHub">
+                <a href="https://github.com/robinkcreatives" target="_blank" rel="noopener noreferrer" className="p-3 rounded-lg bg-gray-900 text-white hover:bg-black transition" title="GitHub">
                   <Github size={18} />
                 </a>
               </div>
@@ -169,7 +169,7 @@ export default function PublicLayout() {
 
               <div className="mt-6 text-gray-400 text-sm">
                 <p>Email: <a href="mailto:info@robinkcreatives.com" className="hover:text-red-500">info@robinkcreatives.com</a></p>
-                <p className="mt-2">Phone: <a href="tel:+15551234567" className="hover:text-red-500">+1 (555) 123-4567</a></p>
+                <p className="mt-2">Phone: <a href="tel:+254769505060" className="hover:text-red-500">+254 769 505 060</a></p>
               </div>
             </div>
           </div>
@@ -184,6 +184,16 @@ export default function PublicLayout() {
           </div>
         </div>
       </footer>
+
+      {/* Floating WhatsApp Icon */}
+      <a 
+        href="https://wa.me/254769505060" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-[60] bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:scale-110 transition-transform duration-300 flex items-center justify-center"
+      >
+        <MessageCircle size={28} />
+      </a>
     </div>
   )
 }

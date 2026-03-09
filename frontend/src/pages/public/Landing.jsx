@@ -39,7 +39,7 @@ export default function Landing() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
               </span>
-              <span className="text-red-400 text-sm font-medium">Crafting Digital Excellence Since 2017</span>
+              <span className="text-red-400 text-sm font-medium">Crafting Digital Excellence Since 2024</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold leading-tight space-y-2">

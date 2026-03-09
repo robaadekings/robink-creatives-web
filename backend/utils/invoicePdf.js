@@ -5,18 +5,15 @@ const Resend = require('resend').Resend;
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
- * GENERATE PDF STREAM
- * Used for direct downloads from the browser.
+ * DRAW PDF CONTENT
+ * This contains all your visual logic. It is called by both 
+ * the Download function and the Buffer/Email function.
  */
-function generateInvoicePdf(invoice, res) {
-    const doc = new PDFDocument({ margin: 40, size: 'A4', bufferPages: true });
+function drawInvoiceContent(doc, invoice) {
     const brandColor = '#8B1C24';
     const textColor = '#1a1a1a';
     const lightText = '#666666';
     const tableBg = '#FBFBFB'; 
-
-    // Pipe to the response stream
-    doc.pipe(res);
 
     // --- 1. PREMIUM BRANDING & SIDEBAR ---
     doc.rect(0, 0, 4, 842).fill(brandColor); // Elegant left accent line
@@ -67,14 +64,12 @@ function generateInvoicePdf(invoice, res) {
     
     items.forEach((item, i) => {
         const itemHeight = 35;
-        // Zebra Striping (Light background for alternating rows)
         if (i % 2 === 0) {
             doc.rect(50, y, 510, itemHeight).fill(tableBg);
         }
 
         doc.fillColor(textColor).font('Helvetica').fontSize(10);
         doc.text(item.name || item.description || "Project Service", colDesc, y + 12, { width: 250 });
-        
         doc.fillColor(lightText).text(item.quantity.toString(), colQty, y + 12);
         
         const price = item.unitPrice || item.rate || 0;
@@ -114,7 +109,16 @@ function generateInvoicePdf(invoice, res) {
 
     doc.fillColor(brandColor).fontSize(10).font('Helvetica-Bold').text("Excellence in every pixel.", 350, footerY, { align: 'right' });
     doc.fillColor(lightText).fontSize(8).text("Thank you for choosing Robink Creatives.", 350, footerY + 12, { align: 'right' });
+}
 
+/**
+ * GENERATE PDF STREAM
+ * Used for direct downloads from the browser.
+ */
+function generateInvoicePdf(invoice, res) {
+    const doc = new PDFDocument({ margin: 40, size: 'A4', bufferPages: true });
+    doc.pipe(res);
+    drawInvoiceContent(doc, invoice);
     doc.end();
 }
 
@@ -127,26 +131,17 @@ function generateInvoicePdfBuffer(invoice) {
         const doc = new PDFDocument({ margin: 40, size: 'A4' });
         const buffers = [];
         
-        doc.on("data", buffers.push.bind(buffers));
+        doc.on("data", (chunk) => buffers.push(chunk));
         doc.on("end", () => resolve(Buffer.concat(buffers)));
         doc.on("error", (err) => reject(err));
 
-        // Use a wrapper or the same logic to draw the PDF
-        // Note: For DRY code, you can move the drawing logic to a separate function
-        // For this file, we call generateInvoicePdf passing a mock response object
-        generateInvoicePdf(invoice, {
-            pipe: () => {},
-            on: () => {},
-            end: () => doc.end(),
-            // Mocking the write behavior for the buffer
-            write: (chunk) => doc.write(chunk)
-        });
+        drawInvoiceContent(doc, invoice);
+        doc.end();
     });
 }
 
 /**
  * SEND EMAIL WITH ATTACHMENT
- * Powered by Resend.
  */
 async function sendInvoiceEmail(invoice) {
     try {
@@ -163,7 +158,7 @@ async function sendInvoiceEmail(invoice) {
                     <p>Dear ${invoice.clientName},</p>
                     <p>We hope you are well. Please find your invoice attached for your recent project.</p>
                     <hr style="border: none; border-top: 1px solid #eee;" />
-                    <p><strong>Total Amount:</strong> $${invoice.total.toFixed(2)}</p>
+                    <p><strong>Total Amount:</strong> $${(invoice.total || 0).toFixed(2)}</p>
                     <p><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
                     <hr style="border: none; border-top: 1px solid #eee;" />
                     <p style="font-size: 12px; color: #666;">If you have any questions, feel free to contact our billing team.</p>

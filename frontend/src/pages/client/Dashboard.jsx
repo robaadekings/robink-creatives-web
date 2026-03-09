@@ -3,7 +3,12 @@ import { Loader2, TrendingUp, CheckCircle, AlertCircle, DollarSign } from "lucid
 import api from "../../utils/axios"
 
 export default function ClientDashboard() {
-  const [stats, setStats] = useState(null)
+  const [stats, setStats] = useState({
+    activeProjects: 0,
+    completedProjects: 0,
+    pendingInvoices: 0,
+    totalPaid: 0
+  })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
@@ -12,7 +17,20 @@ export default function ClientDashboard() {
       try {
         setLoading(true)
         const res = await api.get("/client/dashboard")
-        setStats(res.data.data || res.data)
+        
+        // DEBUG: Look at your browser console (F12) to see what is arriving
+        console.log("Dashboard Raw Response:", res.data)
+
+        const rawData = res.data.data || res.data
+
+        // Defensive mapping: ensures values exist even if backend keys are slightly different
+        setStats({
+          activeProjects: rawData.activeProjects ?? rawData.active_projects ?? 0,
+          completedProjects: rawData.completedProjects ?? rawData.completed_projects ?? 0,
+          pendingInvoices: rawData.pendingInvoices ?? rawData.pending_invoices ?? 0,
+          totalPaid: rawData.totalPaid ?? rawData.total_paid ?? 0
+        })
+
         setError("")
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load dashboard stats")
@@ -35,6 +53,7 @@ export default function ClientDashboard() {
   if (error)
     return (
       <div className="bg-red-500/20 border border-red-500/40 text-red-200 px-6 py-4 rounded-xl">
+        <AlertCircle className="inline mr-2" size={20} />
         {error}
       </div>
     )
@@ -51,25 +70,25 @@ export default function ClientDashboard() {
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card
           title="Active Projects"
-          value={stats?.activeProjects || 0}
+          value={stats.activeProjects}
           icon={TrendingUp}
           color="from-blue-600 to-blue-700"
         />
         <Card
           title="Completed"
-          value={stats?.completedProjects || 0}
+          value={stats.completedProjects}
           icon={CheckCircle}
           color="from-green-600 to-green-700"
         />
         <Card
           title="Pending Invoices"
-          value={stats?.pendingInvoices || 0}
+          value={stats.pendingInvoices}
           icon={AlertCircle}
           color="from-yellow-600 to-yellow-700"
         />
         <Card
           title="Total Paid"
-          value={`$${stats?.totalPaid || 0}`}
+          value={`$${Number(stats.totalPaid).toLocaleString()}`}
           icon={DollarSign}
           color="from-red-600 to-red-700"
         />
