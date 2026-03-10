@@ -35,14 +35,10 @@ export default function Portfolio() {
         setLoading(false)
       }
     }
-
     fetchPortfolio()
   }, [])
 
-  const categories = [
-    "all",
-    ...new Set(projects.map((p) => p.category)),
-  ]
+  const categories = ["all", ...new Set(projects.map((p) => p.category))]
 
   const filteredProjects =
     activeCategory === "all"
@@ -58,12 +54,9 @@ export default function Portfolio() {
 
   return (
     <div className="min-h-screen text-white bg-[#0a0e14]">
-
       {/* ================= HERO ================= */}
       <section className="relative py-20 text-center overflow-hidden">
-
         <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 via-yellow-400/10 to-red-500/20 blur-3xl animate-pulse" />
-
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -76,7 +69,6 @@ export default function Portfolio() {
           </span>
           <span className="text-red-400 text-sm font-medium">Our Work</span>
         </motion.div>
-
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -85,7 +77,6 @@ export default function Portfolio() {
         >
           Portfolio
         </motion.h1>
-
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -98,9 +89,7 @@ export default function Portfolio() {
 
       {/* ================= CATEGORY FILTER ================= */}
       <section className="max-w-7xl mx-auto px-6 mb-12">
-
         <div className="flex flex-wrap justify-center gap-3">
-
           {categories.map((cat) => {
             const Icon = getCategoryIcon(cat === "all" ? "default" : cat)
             return (
@@ -118,16 +107,15 @@ export default function Portfolio() {
               </button>
             )
           })}
-
         </div>
       </section>
 
       {/* ================= FEATURED PROJECT ================= */}
       {featured.length > 0 && (
         <section className="max-w-7xl mx-auto px-6 mb-20">
-
-          <h2 className="text-3xl font-bold mb-10 bg-gradient-to-r from-red-400 to-yellow-400 bg-clip-text text-transparent">Featured Work</h2>
-
+          <h2 className="text-3xl font-bold mb-10 bg-gradient-to-r from-red-400 to-yellow-400 bg-clip-text text-transparent">
+            Featured Work
+          </h2>
           {featured.map((project) => (
             <motion.div
               key={project._id}
@@ -142,25 +130,23 @@ export default function Portfolio() {
                 alt={project.title}
                 className="w-full h-[500px] object-cover transition duration-700 group-hover:scale-105"
               />
-
               <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col justify-end p-10 group-hover:bg-black/50 transition">
-
-                <h3 className="text-4xl font-bold group-hover:text-yellow-300 transition">{project.title}</h3>
-
-                <p className="text-gray-300 mt-4 max-w-2xl">
-                  {project.description}
-                </p>
-
+                <h3 className="text-4xl font-bold group-hover:text-yellow-300 transition">
+                  {project.title}
+                </h3>
+                <p className="text-gray-300 mt-4 max-w-2xl">{project.description}</p>
                 {project.tags && (
                   <div className="flex flex-wrap gap-2 mt-6">
                     {project.tags.slice(0, 4).map((tag, i) => (
-                      <span key={i} className="text-xs bg-red-500/20 border border-red-500/30 px-3 py-1 rounded-full text-red-200">
+                      <span
+                        key={i}
+                        className="text-xs bg-red-500/20 border border-red-500/30 px-3 py-1 rounded-full text-red-200"
+                      >
                         {tag}
                       </span>
                     ))}
                   </div>
                 )}
-
                 <div className="flex gap-4 mt-8">
                   <span className="text-sm text-gray-400">Click to view case study →</span>
                 </div>
@@ -172,59 +158,76 @@ export default function Portfolio() {
 
       {/* ================= GRID ================= */}
       <section className="max-w-7xl mx-auto px-6 pb-20">
-
-        <h2 className="text-3xl font-bold mb-10">All Projects</h2>
+        <div className="flex items-center gap-4 mb-10">
+          <h2 className="text-3xl font-bold">All Projects</h2>
+          <div className="h-[1px] flex-grow bg-gradient-to-r from-white/20 to-transparent" />
+        </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-96">
             <Loader2 className="animate-spin text-red-500" size={32} />
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project, index) => (
               <motion.div
                 key={project._id}
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
-                className="relative group overflow-hidden rounded-2xl cursor-pointer"
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group relative bg-[#0f1219] rounded-3xl overflow-hidden border border-white/10 cursor-pointer shadow-2xl"
                 onClick={() => setSelectedProject(project)}
               >
-                <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-r from-red-600/15 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition duration-500 blur-xl z-0" />
+                <div className="relative h-[400px] overflow-hidden">
+                  <img
+                    src={project.images?.[0]}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+                </div>
 
-                <img
-                  src={project.images?.[0]}
-                  alt={project.title}
-                  className="w-full h-72 object-cover transition duration-700 group-hover:scale-110 relative z-10"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex flex-col justify-end p-6 z-10">
-
-                  <h3 className="text-xl font-semibold text-white group-hover:text-yellow-300 transition">
-                    {project.title}
-                  </h3>
-
-                  <p className="text-sm text-gray-300 mt-2 line-clamp-2">
-                    {project.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {project.tags?.slice(0, 3).map((tag, i) => (
-                      <span
-                        key={i}
-                        className="text-xs bg-red-500/20 border border-red-500/30 px-2 py-1 rounded-full text-red-200"
-                      >
-                        {tag}
+                <div className="absolute inset-x-4 bottom-4 p-5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 transition-all duration-500 ease-in-out group-hover:bottom-6 group-hover:bg-black/70">
+                  <div className="relative z-10">
+                    {/* Hides service label when "All" is active */}
+                    {activeCategory !== "all" && (
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-500 mb-1 block">
+                        {project.category}
                       </span>
-                    ))}
+                    )}
+                    <h3 className="text-xl font-bold text-white group-hover:text-yellow-400 transition-colors duration-300">
+                      {project.title}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {project.tags?.slice(0, 3).map((tag, i) => (
+                        <span
+                          key={i}
+                          className="text-[10px] px-2 py-0.5 rounded bg-white/5 border border-white/10 text-gray-300"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <span className="text-xs text-yellow-400 font-medium">View case study →</span>
+                  <div className="max-h-0 opacity-0 overflow-hidden transition-all duration-500 ease-in-out group-hover:max-h-40 group-hover:opacity-100 group-hover:mt-4">
+                    <p className="text-sm text-gray-400 line-clamp-2 mb-4 border-t border-white/5 pt-4">
+                      {project.description}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
+                      <span>View Case Study</span>
+                      <ArrowRight
+                        size={14}
+                        className="transition-transform duration-300 group-hover:translate-x-2 text-yellow-500"
+                      />
+                    </div>
                   </div>
+                </div>
 
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-red-600/10 to-yellow-500/10" />
+                  <div className="absolute -inset-0.5 border border-red-500/20 rounded-3xl blur-sm" />
                 </div>
               </motion.div>
             ))}
@@ -252,32 +255,25 @@ export default function Portfolio() {
             >
               <X size={24} />
             </button>
-
             <img
               src={selectedProject.images?.[0]}
               alt={selectedProject.title}
               className="w-full h-[400px] object-cover"
             />
-
             <div className="p-10">
               <div className="inline-flex items-center gap-2 mb-4">
                 <span className="text-sm bg-red-500/20 border border-red-500/30 px-3 py-1 rounded-full text-red-200 capitalize">
                   {selectedProject.category}
                 </span>
               </div>
-
               <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                 {selectedProject.title}
               </h2>
-
               <div className="grid md:grid-cols-2 gap-12 mb-12">
                 <div>
                   <h3 className="text-xl font-bold text-red-400 mb-4">Challenge</h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    {selectedProject.description}
-                  </p>
+                  <p className="text-gray-300 leading-relaxed">{selectedProject.description}</p>
                 </div>
-
                 <div>
                   <h3 className="text-xl font-bold text-yellow-400 mb-4">Results</h3>
                   <ul className="space-y-3 text-gray-300">
@@ -296,7 +292,6 @@ export default function Portfolio() {
                   </ul>
                 </div>
               </div>
-
               {selectedProject.tags && (
                 <div className="mb-10">
                   <h3 className="text-lg font-bold mb-4">Technology Stack</h3>
@@ -312,7 +307,6 @@ export default function Portfolio() {
                   </div>
                 </div>
               )}
-
               <div className="flex gap-4 pt-8 border-t border-white/10">
                 {selectedProject.projectUrl && (
                   <a
@@ -324,7 +318,6 @@ export default function Portfolio() {
                     Visit Project <ArrowRight size={16} />
                   </a>
                 )}
-
                 {selectedProject.githubUrl && (
                   <a
                     href={selectedProject.githubUrl}
@@ -344,7 +337,6 @@ export default function Portfolio() {
       {/* ================= BOTTOM CTA ================= */}
       <section className="relative py-20 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 via-transparent to-yellow-500/20 blur-3xl" />
-        
         <div className="relative max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -356,10 +348,11 @@ export default function Portfolio() {
               Ready to Transform Your Project?
             </h2>
             <p className="text-gray-300 mb-10 text-lg">
-              Let's discuss how we can bring your vision to life with the same precision and excellence shown in our portfolio.
+              Let's discuss how we can bring your vision to life with the same precision and excellence
+              shown in our portfolio.
             </p>
             <button
-              onClick={() => navigate('/quote')}
+              onClick={() => navigate("/quote")}
               className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 to-yellow-500 px-8 py-3 rounded-full font-semibold shadow-lg shadow-red-600/40 hover:scale-105 transition-all duration-300 hover:from-red-500 hover:to-yellow-400"
             >
               Start Your Project <ArrowRight size={16} />
@@ -367,7 +360,6 @@ export default function Portfolio() {
           </motion.div>
         </div>
       </section>
-
     </div>
   )
 }

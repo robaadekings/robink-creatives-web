@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { Loader2, Search, Eye, Mail, Calendar, Building2, Phone } from "lucide-react"
-import { motion } from "framer-motion"
+import { Loader2, Search, Eye, Mail, Calendar, Building2, Phone, X, Users } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import api from "../../utils/axios"
 
 export default function AdminClients() {
@@ -24,7 +24,6 @@ export default function AdminClients() {
       setError("")
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load clients")
-      console.error("Clients error:", err)
     } finally {
       setLoading(false)
     }
@@ -55,109 +54,89 @@ export default function AdminClients() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-96">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
-          <p className="text-gray-400">Loading clients...</p>
-        </div>
+      <div className="flex flex-col justify-center items-center h-[60vh]">
+        <Loader2 className="animate-spin text-red-600 mb-4" size={48} />
+        <p className="text-gray-400 animate-pulse">Fetching client database...</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-
+    <div className="space-y-6 pb-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-white">Clients Management</h2>
-          <p className="text-gray-400 mt-1">Manage and view all your clients</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">Clients</h2>
+          <p className="text-sm text-gray-400 mt-1">Directory of all registered customers</p>
         </div>
-        <div className="bg-red-600/20 px-4 py-2 rounded-full border border-red-600/40">
-          <p className="text-red-400 font-semibold">{clients.length} Total Clients</p>
+        <div className="bg-red-600/10 px-4 py-2 rounded-lg border border-red-600/30 w-full sm:w-auto text-center">
+          <p className="text-red-400 text-sm font-bold flex items-center justify-center gap-2">
+            <Users size={16} /> {clients.length} Total
+          </p>
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={20} />
+      {/* Search Bar */}
+      <div className="relative group">
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors" size={20} />
         <input
           type="text"
-          placeholder="Search by name, email, or company..."
+          placeholder="Search name, email, or company..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-red-600 focus:outline-none transition text-white placeholder-gray-500"
+          className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl focus:border-red-600/50 focus:ring-1 focus:ring-red-600/50 focus:outline-none transition-all text-white placeholder-gray-500 text-sm md:text-base"
         />
       </div>
 
       {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-red-500/20 border border-red-500/40 text-red-400 p-4 rounded-xl flex items-center gap-3"
-        >
-          <div className="w-2 h-2 rounded-full bg-red-400"></div>
+        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm">
           {error}
-        </motion.div>
+        </div>
       )}
 
-      {/* Clients Grid/Table */}
+      {/* Results Section */}
       {filteredClients.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center"
-        >
-          <Building2 className="mx-auto text-gray-500 mb-4" size={48} />
-          <p className="text-gray-400">
-            {searchTerm ? "No clients match your search" : "No clients yet"}
-          </p>
-        </motion.div>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
+          <Building2 className="mx-auto text-gray-600 mb-4" size={48} />
+          <p className="text-gray-400 text-sm">No clients found matching your criteria.</p>
+        </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="grid gap-4"
-        >
-          {/* Desktop Table View */}
-          <div className="hidden md:block bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-            <table className="w-full">
-              <thead className="border-b border-white/10 bg-white/5">
-                <tr className="text-gray-400 text-sm font-semibold">
-                  <th className="px-6 py-4 text-left">Name</th>
-                  <th className="px-6 py-4 text-left">Email</th>
-                  <th className="px-6 py-4 text-left">Company</th>
-                  <th className="px-6 py-4 text-left">Phone</th>
-                  <th className="px-6 py-4 text-left">Joined</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
+        <div className="space-y-4">
+          {/* Table for Desktop */}
+          <div className="hidden lg:block bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+            <table className="w-full text-left">
+              <thead className="bg-white/5 border-b border-white/10">
+                <tr className="text-gray-400 text-xs uppercase tracking-wider">
+                  <th className="px-6 py-4 font-semibold">Client Name</th>
+                  <th className="px-6 py-4 font-semibold">Contact Info</th>
+                  <th className="px-6 py-4 font-semibold">Company</th>
+                  <th className="px-6 py-4 font-semibold">Joined</th>
+                  <th className="px-6 py-4 text-right">Action</th>
                 </tr>
               </thead>
-
-              <tbody>
-                {filteredClients.map((client, idx) => (
-                  <tr
-                    key={client._id}
-                    className={`border-b border-white/5 ${
-                      idx % 2 === 0 ? "bg-white/[2%]" : ""
-                    } hover:bg-white/10 transition`}
-                  >
-                    <td className="px-6 py-4 text-sm font-semibold text-white">{client.name}</td>
-                    <td className="px-6 py-4 text-sm text-gray-400">{client.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-400">{client.company || "—"}</td>
-                    <td className="px-6 py-4 text-sm text-gray-400">{client.phone || "—"}</td>
-                    <td className="px-6 py-4 text-sm text-gray-400">
+              <tbody className="divide-y divide-white/5">
+                {filteredClients.map((client) => (
+                  <tr key={client._id} className="hover:bg-white/[3%] transition-colors group">
+                    <td className="px-6 py-4">
+                      <p className="text-sm font-bold text-white">{client.name}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-sm text-gray-300">{client.email}</p>
+                      <p className="text-xs text-gray-500">{client.phone || "No phone"}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-gray-400">{client.company || "—"}</span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
                       {new Date(client.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.95 }}
+                      <button 
                         onClick={() => handleViewClient(client)}
-                        className="p-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg transition"
-                        title="View Details"
+                        className="p-2 bg-white/5 hover:bg-red-600 text-gray-400 hover:text-white rounded-lg transition-all"
                       >
                         <Eye size={18} />
-                      </motion.button>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -165,149 +144,129 @@ export default function AdminClients() {
             </table>
           </div>
 
-          {/* Mobile Card View */}
-          <div className="md:hidden space-y-4">
+          {/* Cards for Mobile/Tablet */}
+          <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredClients.map((client) => (
-              <motion.div
-                key={client._id}
-                whileHover={{ scale: 1.02 }}
-                className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3"
-              >
+              <div key={client._id} className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-semibold text-white">{client.name}</h3>
-                    <p className="text-sm text-gray-400 mt-1">{client.email}</p>
+                    <h3 className="font-bold text-white">{client.name}</h3>
+                    <p className="text-xs text-gray-500 mt-0.5 break-all">{client.email}</p>
                   </div>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
+                  <button 
                     onClick={() => handleViewClient(client)}
-                    className="p-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg"
+                    className="p-2.5 bg-red-600/20 text-red-400 rounded-lg"
                   >
                     <Eye size={18} />
-                  </motion.button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  {client.company && (
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <Building2 size={14} />
-                      <span>{client.company}</span>
-                    </div>
-                  )}
-                  {client.phone && (
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <Phone size={14} />
-                      <span>{client.phone}</span>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* Client Details Modal */}
-      {selectedClient && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          onClick={() => setSelectedClient(null)}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        >
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white/10 border border-white/20 rounded-2xl p-6 md:p-8 max-w-2xl w-full backdrop-blur-xl"
-          >
-            {detailsLoading ? (
-              <div className="text-center py-8">
-                <Loader2 className="animate-spin mx-auto text-red-600 mb-2" size={32} />
-                <p className="text-gray-400">Loading details...</p>
-              </div>
-            ) : clientDetails ? (
-              <div className="space-y-6">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-2xl font-bold text-white">{clientDetails.name}</h3>
-                    <p className="text-gray-400 mt-1">{clientDetails.email}</p>
-                  </div>
-                  <button
-                    onClick={() => setSelectedClient(null)}
-                    className="text-gray-400 hover:text-white text-2xl"
-                  >
-                    ×
                   </button>
                 </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-gray-400 text-sm">Email</p>
-                    <p className="text-white flex items-center gap-2 mt-2">
-                      <Mail size={16} className="text-red-600" />
-                      {clientDetails.email}
-                    </p>
+                <div className="pt-3 border-t border-white/5 grid grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2 text-[11px] text-gray-400">
+                    <Building2 size={14} className="text-red-500" />
+                    <span className="truncate">{client.company || "Personal"}</span>
                   </div>
-
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-gray-400 text-sm">Phone</p>
-                    <p className="text-white flex items-center gap-2 mt-2">
-                      <Phone size={16} className="text-red-600" />
-                      {clientDetails.phone || "—"}
-                    </p>
-                  </div>
-
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-gray-400 text-sm">Company</p>
-                    <p className="text-white flex items-center gap-2 mt-2">
-                      <Building2 size={16} className="text-red-600" />
-                      {clientDetails.company || "—"}
-                    </p>
-                  </div>
-
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <p className="text-gray-400 text-sm">Member Since</p>
-                    <p className="text-white flex items-center gap-2 mt-2">
-                      <Calendar size={16} className="text-red-600" />
-                      {new Date(clientDetails.createdAt).toLocaleDateString()}
-                    </p>
+                  <div className="flex items-center gap-2 text-[11px] text-gray-400">
+                    <Calendar size={14} className="text-red-500" />
+                    <span>{new Date(client.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
-
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div className="bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/30 rounded-xl p-4 text-center">
-                    <p className="text-gray-400 text-sm">Total Projects</p>
-                    <p className="text-2xl font-bold text-red-400 mt-2">{clientDetails.projects || 0}</p>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-amber-600/20 to-amber-700/10 border border-amber-600/30 rounded-xl p-4 text-center">
-                    <p className="text-gray-400 text-sm">Total Invoices</p>
-                    <p className="text-2xl font-bold text-amber-400 mt-2">{clientDetails.invoices || 0}</p>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-green-600/20 to-green-700/10 border border-green-600/30 rounded-xl p-4 text-center">
-                    <p className="text-gray-400 text-sm">Total Spent</p>
-                    <p className="text-2xl font-bold text-green-400 mt-2">${(clientDetails.totalSpent || 0).toLocaleString()}</p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setSelectedClient(null)}
-                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold py-3 rounded-xl transition"
-                >
-                  Close
-                </button>
               </div>
-            ) : (
-              <div className="text-center text-gray-400">
-                Failed to load client details
-              </div>
-            )}
-          </motion.div>
-        </motion.div>
+            ))}
+          </div>
+        </div>
       )}
 
+      {/* Details Modal */}
+      <AnimatePresence>
+        {selectedClient && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedClient(null)}
+              className="absolute inset-0 bg-[#000]/80 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative bg-[#111827] border border-white/10 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+            >
+              {/* Modal Header */}
+              <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h3 className="text-lg font-bold">Client Profile</h3>
+                <button onClick={() => setSelectedClient(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white">
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar">
+                {detailsLoading ? (
+                  <div className="py-12 flex flex-col items-center">
+                    <Loader2 className="animate-spin text-red-600 mb-2" />
+                    <p className="text-sm text-gray-500">Loading profile data...</p>
+                  </div>
+                ) : clientDetails && (
+                  <>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg shadow-red-900/20">
+                          {clientDetails.name.charAt(0)}
+                        </div>
+                        <div>
+                          <h4 className="text-xl font-bold text-white">{clientDetails.name}</h4>
+                          <p className="text-sm text-gray-400">{clientDetails.company || "Independent Client"}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                          <p className="text-[10px] uppercase text-gray-500 font-bold mb-1">Email Address</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-200">
+                            <Mail size={14} className="text-red-500" />
+                            <span className="break-all">{clientDetails.email}</span>
+                          </div>
+                        </div>
+                        <div className="bg-white/5 p-3 rounded-xl border border-white/5">
+                          <p className="text-[10px] uppercase text-gray-500 font-bold mb-1">Phone Number</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-200">
+                            <Phone size={14} className="text-red-500" />
+                            <span>{clientDetails.phone || "Not provided"}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-red-600/10 border border-red-600/20 p-3 rounded-xl text-center">
+                        <p className="text-[10px] text-red-400 font-bold uppercase">Projects</p>
+                        <p className="text-xl font-bold mt-1">{clientDetails.projects || 0}</p>
+                      </div>
+                      <div className="bg-amber-600/10 border border-amber-600/20 p-3 rounded-xl text-center">
+                        <p className="text-[10px] text-amber-400 font-bold uppercase">Invoices</p>
+                        <p className="text-xl font-bold mt-1">{clientDetails.invoices || 0}</p>
+                      </div>
+                      <div className="bg-green-600/10 border border-green-600/20 p-3 rounded-xl text-center">
+                        <p className="text-[10px] text-green-400 font-bold uppercase">Total Spend</p>
+                        <p className="text-lg font-bold mt-1">${(clientDetails.totalSpent || 0).toLocaleString()}</p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setSelectedClient(null)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-red-900/20"
+                    >
+                      Close Profile
+                    </button>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

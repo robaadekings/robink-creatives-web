@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { Loader2, Download, Filter, Search, CheckCircle, AlertCircle, Clock } from "lucide-react"
-import { motion } from "framer-motion"
+import { Loader2, Download, Filter, Search, CheckCircle, AlertCircle, Clock, DollarSign, Calendar } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import api from "../../utils/axios"
 
 export default function AdminInvoices() {
@@ -9,7 +9,7 @@ export default function AdminInvoices() {
   const [error, setError] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [isDownloading, setIsDownloading] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(null)
 
   useEffect(() => {
     fetchInvoices()
@@ -23,7 +23,6 @@ export default function AdminInvoices() {
       setError("")
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load invoices")
-      console.error("Invoices error:", err)
     } finally {
       setLoading(false)
     }
@@ -38,31 +37,22 @@ export default function AdminInvoices() {
     }
   }
 
-  // FIXED DOWNLOAD FUNCTION
   const downloadPDF = async (id) => {
     try {
-      setIsDownloading(id);
-      // We use '/invoices' because your backend routes this via invoiceRoutes
-      const response = await api.get(`/invoices/${id}/pdf`, {
-        responseType: 'blob',
-      });
-
-      // Create a blob URL and trigger download
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `invoice-${id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      
-      // Clean up
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      setIsDownloading(id)
+      const response = await api.get(`/invoices/${id}/pdf`, { responseType: 'blob' })
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `invoice-${id}.pdf`)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode.removeChild(link)
+      window.URL.revokeObjectURL(url)
     } catch (err) {
-      console.error("Download failed:", err);
-      alert("Failed to download PDF. Please ensure the backend controller is working.");
+      alert("Failed to download PDF.");
     } finally {
-      setIsDownloading(null);
+      setIsDownloading(null)
     }
   }
 
@@ -70,21 +60,16 @@ export default function AdminInvoices() {
     const matchesSearch = 
       inv.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       inv.clientName.toLowerCase().includes(searchTerm.toLowerCase())
-    
     if (statusFilter === "all") return matchesSearch
     return matchesSearch && inv.status.toLowerCase() === statusFilter.toLowerCase()
   })
 
-  const getStatusIcon = (status) => {
+  const getStatusStyles = (status) => {
     switch(status.toLowerCase()) {
-      case "paid":
-        return <CheckCircle size={16} className="text-green-400" />
-      case "pending":
-        return <Clock size={16} className="text-yellow-400" />
-      case "overdue":
-        return <AlertCircle size={16} className="text-red-400" />
-      default:
-        return <Clock size={16} className="text-gray-400" />
+      case "paid": return "bg-green-500/10 text-green-400 border-green-500/20"
+      case "pending": return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+      case "overdue": return "bg-red-500/10 text-red-400 border-red-500/20"
+      default: return "bg-gray-500/10 text-gray-400 border-gray-500/20"
     }
   }
 
@@ -98,65 +83,59 @@ export default function AdminInvoices() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-96">
+      <div className="flex justify-center items-center h-[60vh]">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
-          <p className="text-gray-400">Loading invoices...</p>
+          <Loader2 className="animate-spin h-12 w-12 text-red-600 mx-auto mb-4" />
+          <p className="text-gray-400">Loading financial records...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-10">
       {/* Header */}
-      <div>
-        <h2 className="text-3xl font-bold text-white">Invoices Management</h2>
-        <p className="text-gray-400 mt-1">Track and manage all client invoices</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">Invoices</h2>
+          <p className="text-sm text-gray-400 mt-1">Track payments and manage billing</p>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid md:grid-cols-5 gap-4">
-        <motion.div whileHover={{ scale: 1.03 }} className="bg-white/5 border border-white/10 rounded-xl p-4">
-          <p className="text-gray-400 text-sm">Total Invoices</p>
-          <p className="text-2xl font-bold text-white mt-1">{stats.total}</p>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-green-600/20 to-green-700/10 border border-green-600/30 rounded-xl p-4">
-          <p className="text-gray-400 text-sm">Paid</p>
-          <p className="text-2xl font-bold text-green-400 mt-1">{stats.paid}</p>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-yellow-600/20 to-yellow-700/10 border border-yellow-600/30 rounded-xl p-4">
-          <p className="text-gray-400 text-sm">Pending</p>
-          <p className="text-2xl font-bold text-yellow-400 mt-1">{stats.pending}</p>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-red-600/20 to-red-700/10 border border-red-600/30 rounded-xl p-4">
-          <p className="text-gray-400 text-sm">Overdue</p>
-          <p className="text-2xl font-bold text-red-400 mt-1">{stats.overdue}</p>
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-blue-600/20 to-blue-700/10 border border-blue-600/30 rounded-xl p-4">
-          <p className="text-gray-400 text-sm">Total Value</p>
-          <p className="text-2xl font-bold text-blue-400 mt-1">${(stats.totalAmount || 0).toLocaleString()}</p>
-        </motion.div>
+      {/* Stats Grid - Responsive Column sizing */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+        {[
+          { label: "Total", val: stats.total, color: "bg-white/5 text-white" },
+          { label: "Paid", val: stats.paid, color: "bg-green-600/10 text-green-400 border-green-600/20" },
+          { label: "Pending", val: stats.pending, color: "bg-yellow-600/10 text-yellow-400 border-yellow-600/20" },
+          { label: "Overdue", val: stats.overdue, color: "bg-red-600/10 text-red-400 border-red-600/20" },
+          { label: "Value", val: `$${stats.totalAmount.toLocaleString()}`, color: "bg-blue-600/10 text-blue-400 border-blue-600/20", span: "col-span-2 lg:col-span-1" }
+        ].map((s, i) => (
+          <div key={i} className={`${s.color} ${s.span || ""} border border-white/10 rounded-xl p-4 transition-all hover:bg-white/10`}>
+            <p className="text-[10px] uppercase font-bold opacity-60 tracking-wider">{s.label}</p>
+            <p className="text-xl font-bold mt-1 truncate">{s.val}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={20} />
+      {/* Search & Filters */}
+      <div className="flex flex-col md:flex-row gap-3">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors" size={18} />
           <input
             type="text"
-            placeholder="Search by invoice number or client..."
+            placeholder="Search invoice or client..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-red-600 focus:outline-none transition text-white placeholder-gray-500"
+            className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:border-red-600/50 outline-none text-white text-sm"
           />
         </div>
-        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
-          <Filter size={20} className="text-gray-500" />
+        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-w-[160px]">
+          <Filter size={18} className="text-gray-500" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-transparent text-white focus:outline-none cursor-pointer"
+            className="bg-transparent text-sm text-white outline-none w-full cursor-pointer"
           >
             <option value="all">All Status</option>
             <option value="paid">Paid</option>
@@ -166,73 +145,106 @@ export default function AdminInvoices() {
         </div>
       </div>
 
-      {error && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-500/20 border border-red-500/40 text-red-400 p-4 rounded-xl flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-red-400"></div>
-          {error}
-        </motion.div>
-      )}
-
-      {/* Invoices Table */}
+      {/* Content Area */}
       {filteredInvoices.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
-          <AlertCircle className="mx-auto text-gray-500 mb-4" size={48} />
-          <p className="text-gray-400">{searchTerm || statusFilter !== "all" ? "No invoices match your filters" : "No invoices yet"}</p>
-        </motion.div>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
+          <AlertCircle className="mx-auto text-gray-500 mb-4" size={40} />
+          <p className="text-gray-400 text-sm">No invoices found matching your criteria.</p>
+        </div>
       ) : (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
-          <table className="w-full">
-            <thead className="border-b border-white/10 bg-white/5">
-              <tr className="text-gray-400 text-sm font-semibold">
-                <th className="px-6 py-4 text-left">Invoice #</th>
-                <th className="px-6 py-4 text-left">Client</th>
-                <th className="px-6 py-4 text-left">Amount</th>
-                <th className="px-6 py-4 text-left">Status</th>
-                <th className="px-6 py-4 text-left">Due Date</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredInvoices.map((inv, idx) => (
-                <tr key={inv._id} className={`border-b border-white/5 ${idx % 2 === 0 ? "bg-white/[2%]" : ""} hover:bg-white/10 transition`}>
-                  <td className="px-6 py-4 text-sm font-mono text-red-400 font-semibold">{inv.invoiceNumber}</td>
-                  <td className="px-6 py-4 text-sm text-white">{inv.clientName}</td>
-                  <td className="px-6 py-4 text-sm font-semibold text-white">${(inv.total || 0).toLocaleString()} {inv.currency || "USD"}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(inv.status)}
+        <>
+          {/* Desktop Table */}
+          <div className="hidden lg:block bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-white/5 border-b border-white/10 text-gray-400">
+                <tr>
+                  <th className="px-6 py-4 font-semibold">Invoice #</th>
+                  <th className="px-6 py-4 font-semibold">Client</th>
+                  <th className="px-6 py-4 font-semibold">Amount</th>
+                  <th className="px-6 py-4 font-semibold">Status</th>
+                  <th className="px-6 py-4 font-semibold">Due Date</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {filteredInvoices.map((inv) => (
+                  <tr key={inv._id} className="hover:bg-white/[3%] transition-colors">
+                    <td className="px-6 py-4 font-mono text-red-400 font-bold">{inv.invoiceNumber}</td>
+                    <td className="px-6 py-4 text-white font-medium">{inv.clientName}</td>
+                    <td className="px-6 py-4 text-white">${inv.total?.toLocaleString()}</td>
+                    <td className="px-6 py-4">
                       <select
                         value={inv.status}
                         onChange={(e) => updateStatus(inv._id, e.target.value)}
-                        className={`px-3 py-1 rounded-full text-xs font-semibold border-0 focus:outline-none cursor-pointer transition-all ${
-                          inv.status === "paid" ? "bg-green-500/20 text-green-400" : 
-                          inv.status === "pending" ? "bg-yellow-500/20 text-yellow-400" : "bg-red-500/20 text-red-400"
-                        }`}
+                        className={`px-3 py-1 rounded-full text-[11px] font-bold border outline-none cursor-pointer ${getStatusStyles(inv.status)}`}
                       >
                         <option value="pending">Pending</option>
                         <option value="paid">Paid</option>
                         <option value="overdue">Overdue</option>
                       </select>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-400">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : "—"}</td>
-                  <td className="px-6 py-4 text-right">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => downloadPDF(inv._id)}
-                      disabled={isDownloading === inv._id}
-                      className="p-2 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-lg transition disabled:opacity-50"
-                      title="Download PDF"
+                    </td>
+                    <td className="px-6 py-4 text-gray-400">{inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : "—"}</td>
+                    <td className="px-6 py-4 text-right">
+                      <button 
+                        onClick={() => downloadPDF(inv._id)}
+                        disabled={isDownloading === inv._id}
+                        className="p-2 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-all disabled:opacity-30"
+                      >
+                        {isDownloading === inv._id ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card List */}
+          <div className="lg:hidden space-y-4">
+            {filteredInvoices.map((inv) => (
+              <div key={inv._id} className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-widest">#{inv.invoiceNumber}</span>
+                    <h3 className="font-bold text-white text-base">{inv.clientName}</h3>
+                  </div>
+                  <button 
+                    onClick={() => downloadPDF(inv._id)}
+                    className="p-3 bg-red-600/20 text-red-400 rounded-xl active:scale-90 transition-transform"
+                  >
+                    <Download size={18} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-gray-500 font-bold uppercase">Amount Due</p>
+                    <p className="text-white font-bold text-lg">${inv.total?.toLocaleString()}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-gray-500 font-bold uppercase">Status</p>
+                    <select
+                      value={inv.status}
+                      onChange={(e) => updateStatus(inv._id, e.target.value)}
+                      className={`w-full px-2 py-1 rounded-lg text-xs font-bold border outline-none ${getStatusStyles(inv.status)}`}
                     >
-                      {isDownloading === inv._id ? <Loader2 size={18} className="animate-spin" /> : <Download size={18} />}
-                    </motion.button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </motion.div>
+                      <option value="pending">Pending</option>
+                      <option value="paid">Paid</option>
+                      <option value="overdue">Overdue</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-white/5 flex items-center justify-between text-xs text-gray-400">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar size={14} className="text-red-500" />
+                    <span>Due: {inv.dueDate ? new Date(inv.dueDate).toLocaleDateString() : "No date"}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

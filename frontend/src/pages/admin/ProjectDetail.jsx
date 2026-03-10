@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
-import { Loader2, FileText, DollarSign, ArrowLeft, Calendar, User, CheckCircle } from "lucide-react"
+import { Loader2, FileText, DollarSign, ArrowLeft, Calendar, User, CheckCircle, Paperclip } from "lucide-react"
 import api from "../../utils/axios"
 
 export default function ProjectDetail() {
@@ -80,7 +80,7 @@ export default function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 px-4">
         <p className="text-gray-400 mb-4">Project not found</p>
         <button onClick={() => navigate(-1)} className="text-[#8B1C24] hover:underline">Go back</button>
       </div>
@@ -99,26 +99,26 @@ export default function ProjectDetail() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-7xl mx-auto space-y-6 md:space-y-8 px-2 sm:px-4 pb-12">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white"
+          className="w-fit p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white"
         >
           <ArrowLeft size={24} />
         </button>
         <div className="flex-1">
-          <h2 className="text-3xl font-bold text-white">{project.title}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white break-words">{project.title}</h2>
           <p className="text-gray-400 mt-1">Project Details</p>
         </div>
       </div>
 
-      {/* Main Info */}
-      <div className="grid md:grid-cols-2 gap-6">
+      {/* Main Info Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+          whileHover={{ scale: window.innerWidth > 768 ? 1.02 : 1 }}
+          className="bg-white/5 border border-white/10 rounded-2xl p-5 md:p-6"
         >
           <div className="space-y-6">
             <div>
@@ -126,10 +126,10 @@ export default function ProjectDetail() {
                 <User size={16} />
                 Client
               </p>
-              <p className="text-xl font-semibold text-white mt-2">
+              <p className="text-lg md:text-xl font-semibold text-white mt-1 break-words">
                 {project.client?.name || project.clientName || "N/A"}
               </p>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-400 text-sm mt-1 break-all">
                 {project.client?.email || project.clientEmail || "No email"}
               </p>
             </div>
@@ -139,7 +139,7 @@ export default function ProjectDetail() {
                 <FileText size={16} />
                 Service
               </p>
-              <p className="text-lg font-semibold text-white mt-2">
+              <p className="text-base md:text-lg font-semibold text-white mt-1">
                 {project.serviceId?.name || project.serviceId?.title || "N/A"}
               </p>
             </div>
@@ -149,7 +149,7 @@ export default function ProjectDetail() {
                 <DollarSign size={16} />
                 Budget
               </p>
-              <p className="text-2xl font-bold text-[#8B1C24] mt-2">
+              <p className="text-xl md:text-2xl font-bold text-[#8B1C24] mt-1">
                 ${(project.budget || 0).toLocaleString()}
               </p>
             </div>
@@ -157,8 +157,8 @@ export default function ProjectDetail() {
         </motion.div>
 
         <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+          whileHover={{ scale: window.innerWidth > 768 ? 1.02 : 1 }}
+          className="bg-white/5 border border-white/10 rounded-2xl p-5 md:p-6"
         >
           <div className="space-y-6">
             <div>
@@ -166,8 +166,8 @@ export default function ProjectDetail() {
                 <CheckCircle size={16} />
                 Status
               </p>
-              <p className={`inline-block px-4 py-2 rounded-lg text-sm font-semibold border mt-2 capitalize ${getStatusBadgeColor(project.status)}`}>
-                {project.status}
+              <p className={`inline-block px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-xs md:text-sm font-semibold border mt-2 capitalize ${getStatusBadgeColor(project.status)}`}>
+                {project.status?.replace('_', ' ')}
               </p>
             </div>
 
@@ -176,23 +176,21 @@ export default function ProjectDetail() {
                 <Calendar size={16} />
                 Deadline
               </p>
-              <p className="text-lg font-semibold text-white mt-2">
+              <p className="text-base md:text-lg font-semibold text-white mt-1">
                 {project.deadline ? new Date(project.deadline).toLocaleDateString() : "Not set"}
               </p>
             </div>
 
             <div>
-              <p className="text-gray-400 text-sm">Progress</p>
-              <div className="mt-3">
-                <div className="flex justify-between mb-2">
-                  <span className="text-white font-semibold">{project.progress || 0}%</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
-                  <div
-                    className="bg-gradient-to-r from-[#8B1C24] to-red-600 h-2 rounded-full transition-all"
-                    style={{ width: `${project.progress || 0}%` }}
-                  />
-                </div>
+              <div className="flex justify-between items-center mb-2">
+                <p className="text-gray-400 text-sm">Progress</p>
+                <span className="text-white text-sm font-semibold">{project.progress || 0}%</span>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-2.5">
+                <div
+                  className="bg-gradient-to-r from-[#8B1C24] to-red-600 h-2.5 rounded-full transition-all duration-500"
+                  style={{ width: `${project.progress || 0}%` }}
+                />
               </div>
             </div>
           </div>
@@ -202,34 +200,35 @@ export default function ProjectDetail() {
       {/* Description */}
       {project.description && (
         <motion.div
-          whileHover={{ scale: 1.01 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+          whileHover={{ scale: window.innerWidth > 768 ? 1.01 : 1 }}
+          className="bg-white/5 border border-white/10 rounded-2xl p-5 md:p-6"
         >
-          <h3 className="text-xl font-semibold text-white mb-4">Description</h3>
-          <p className="text-gray-300 leading-relaxed">{project.description}</p>
+          <h3 className="text-lg md:text-xl font-semibold text-white mb-3">Description</h3>
+          <p className="text-gray-300 leading-relaxed text-sm md:text-base">{project.description}</p>
         </motion.div>
       )}
 
       {/* Assets */}
       {project.assets && project.assets.length > 0 && (
         <motion.div
-          whileHover={{ scale: 1.01 }}
-          className="bg-white/5 border border-white/10 rounded-2xl p-6"
+          whileHover={{ scale: window.innerWidth > 768 ? 1.01 : 1 }}
+          className="bg-white/5 border border-white/10 rounded-2xl p-5 md:p-6"
         >
-          <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <FileText size={20} />
+          <h3 className="text-lg md:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+            <Paperclip size={20} />
             Assets
           </h3>
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {project.assets.map((asset, idx) => (
               <a
                 key={idx}
                 href={asset}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block p-3 bg-white/5 hover:bg-white/10 rounded-lg text-[#8B1C24] hover:underline transition"
+                className="flex items-center gap-2 p-3 bg-white/5 hover:bg-white/10 rounded-lg text-[#8B1C24] transition text-sm truncate"
               >
-                📎 {asset.split('/').pop()}
+                <FileText size={16} className="flex-shrink-0" />
+                <span className="truncate">{asset.split('/').pop()}</span>
               </a>
             ))}
           </div>
@@ -237,22 +236,28 @@ export default function ProjectDetail() {
       )}
 
       {/* Admin Actions */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowCreateQuote(!showCreateQuote)}
-          className="bg-gradient-to-r from-[#8B1C24] to-red-600 hover:from-[#A62A32] hover:to-red-700 px-6 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            setShowCreateQuote(!showCreateQuote);
+            setShowCreateInvoice(false);
+          }}
+          className="w-full bg-gradient-to-r from-[#8B1C24] to-red-600 hover:from-[#A62A32] hover:to-red-700 px-6 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition shadow-lg shadow-red-900/20"
         >
           <FileText size={20} />
           {showCreateQuote ? "Cancel" : "Create Quote"}
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowCreateInvoice(!showCreateInvoice)}
-          className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-6 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => {
+            setShowCreateInvoice(!showCreateInvoice);
+            setShowCreateQuote(false);
+          }}
+          className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-6 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 transition shadow-lg shadow-green-900/20"
         >
           <DollarSign size={20} />
           {showCreateInvoice ? "Cancel" : "Create Invoice"}
@@ -264,16 +269,16 @@ export default function ProjectDetail() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/5 border border-[#8B1C24]/30 rounded-2xl p-6"
+          className="bg-white/5 border border-[#8B1C24]/30 rounded-2xl p-5 md:p-6"
         >
-          <h3 className="text-xl font-semibold text-white mb-4">Create Quote for {project.client?.name || project.clientName}?</h3>
-          <p className="text-gray-400 mb-4">This will create a quote request based on project details.</p>
-          <div className="flex gap-4">
+          <h3 className="text-lg md:text-xl font-semibold text-white mb-2">Create Quote for {project.client?.name || project.clientName}?</h3>
+          <p className="text-gray-400 mb-6 text-sm md:text-base">This will create a formal quote based on these project details.</p>
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={createQuote}
               className="flex-1 bg-[#8B1C24] hover:bg-[#A62A32] text-white font-semibold py-3 rounded-lg transition"
             >
-              Confirm & Create Quote
+              Confirm & Create
             </button>
             <button
               onClick={() => setShowCreateQuote(false)}
@@ -290,16 +295,19 @@ export default function ProjectDetail() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/5 border border-green-600/30 rounded-2xl p-6"
+          className="bg-white/5 border border-green-600/30 rounded-2xl p-5 md:p-6"
         >
-          <h3 className="text-xl font-semibold text-white mb-4">Create Invoice for {project.client?.name || project.clientName}?</h3>
-          <p className="text-gray-400 mb-4">This will create an invoice for the project budget amount: ${(project.budget || 0).toLocaleString()}</p>
-          <div className="flex gap-4">
+          <h3 className="text-lg md:text-xl font-semibold text-white mb-2">Create Invoice for {project.client?.name || project.clientName}?</h3>
+          <p className="text-gray-400 mb-6 text-sm md:text-base">
+            This will create an invoice for the budget amount: 
+            <span className="text-white font-bold ml-1">${(project.budget || 0).toLocaleString()}</span>
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={createInvoice}
               className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition"
             >
-              Confirm & Create Invoice
+              Confirm & Create
             </button>
             <button
               onClick={() => setShowCreateInvoice(false)}

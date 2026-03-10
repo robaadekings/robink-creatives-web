@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Loader2, Download, Eye, FileText } from "lucide-react"
+import { Loader2, Download, FileText, CheckCircle2 } from "lucide-react"
 import { motion } from "framer-motion"
 import api from "../../utils/axios"
 
@@ -25,10 +25,9 @@ export default function ClientQuotes() {
       setApproving(quoteId)
       await api.put(`/client/quote/${quoteId}/approve`)
       
-      // Update the quote status locally
       setQuotes(quotes.map(quote => 
         quote._id === quoteId 
-          ? { ...quote, clientApproved: true, approvedAt: new Date() }
+          ? { ...quote, clientApproved: true, approvedAt: new Date(), status: 'approved' }
           : quote
       ))
     } catch (error) {
@@ -42,126 +41,127 @@ export default function ClientQuotes() {
   const getStatusColor = (status) => {
     switch(status?.toLowerCase()) {
       case "approved":
-        return "from-green-600/20 to-green-700/10 border-green-600/30 text-green-400"
+        return "bg-green-500/10 border-green-500/30 text-green-400"
       case "pending":
-        return "from-yellow-600/20 to-yellow-700/10 border-yellow-600/30 text-yellow-400"
+        return "bg-yellow-500/10 border-yellow-500/30 text-yellow-400"
       case "reviewed":
-        return "from-blue-600/20 to-blue-700/10 border-blue-600/30 text-blue-400"
+        return "bg-blue-500/10 border-blue-500/30 text-blue-400"
       case "rejected":
-        return "from-red-600/20 to-red-700/10 border-red-600/30 text-red-400"
+        return "bg-red-500/10 border-red-500/30 text-red-400"
       default:
-        return "from-gray-600/20 to-gray-700/10 border-gray-600/30 text-gray-400"
+        return "bg-gray-500/10 border-gray-500/30 text-gray-400"
     }
   }
 
-  if (loading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-[#8B1C24]" size={32} /></div>
-
-  if (quotes.length === 0) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center py-16"
-      >
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-12 max-w-md mx-auto">
-          <FileText className="mx-auto text-gray-500 mb-4" size={48} />
-          <h3 className="text-xl font-semibold text-white mb-2">No Quotes Yet</h3>
-          <p className="text-gray-400">Quotes will appear here once your admin creates them for your projects.</p>
-        </div>
-      </motion.div>
-    )
-  }
+  if (loading) return (
+    <div className="flex flex-col justify-center items-center h-96 gap-4">
+      <Loader2 className="animate-spin text-[#8B1C24]" size={40} />
+      <p className="text-gray-500 text-sm">Fetching your quotes...</p>
+    </div>
+  )
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-bold text-white">My Quotes</h2>
-        <p className="text-gray-400 mt-1">View and track your project quotes</p>
-      </div>
+    <div className="space-y-6 md:space-y-8 px-2 sm:px-0 pb-10">
+      <header>
+        <h2 className="text-2xl md:text-3xl font-bold text-white">My Quotes</h2>
+        <p className="text-gray-400 mt-1 text-sm md:text-base">View and track your project estimates</p>
+      </header>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {quotes.map(quote => (
-          <motion.div
-            key={quote._id}
-            whileHover={{ scale: 1.02 }}
-            className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300"
-          >
-            <div className="space-y-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-xl font-semibold text-white mb-1">
-                    {quote.serviceId?.title || "Project Quote"}
-                  </h3>
-                  <p className="text-gray-400 text-sm">
-                    {new Date(quote.createdAt).toLocaleDateString()}
-                  </p>
+      {quotes.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <div className="bg-white/5 border border-dashed border-white/10 rounded-3xl p-8 md:p-12 max-w-md mx-auto">
+            <div className="bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileText className="text-gray-500" size={32} />
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">No Quotes Yet</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Quotes will appear here once the team generates an estimate for your requests.
+            </p>
+          </div>
+        </motion.div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          {quotes.map(quote => (
+            <motion.div
+              key={quote._id}
+              whileHover={{ y: -4 }}
+              className="bg-white/5 border border-white/10 rounded-2xl p-5 md:p-6 hover:bg-white/[0.07] transition-all duration-300 flex flex-col justify-between"
+            >
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg md:text-xl font-bold text-white group-hover:text-red-400 transition-colors">
+                      {quote.serviceId?.title || "Project Quote"}
+                    </h3>
+                    <p className="text-gray-500 text-xs mt-1 flex items-center gap-1">
+                      Created: {new Date(quote.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className={`w-fit px-3 py-1 rounded-full text-[10px] uppercase font-black tracking-widest border ${getStatusColor(quote.status)}`}>
+                    {quote.status}
+                  </div>
                 </div>
-                <div className={`px-3 py-1 rounded-lg text-sm font-semibold border ${getStatusColor(quote.status)}`}>
-                  {quote.status}
-                  {quote.clientApproved && (
-                    <span className="ml-2 text-green-400">✓ Approved</span>
+
+                {quote.description && (
+                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 italic">
+                    "{quote.description}"
+                  </p>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 py-2 border-y border-white/5">
+                  <div>
+                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Budget Range</p>
+                    <p className="text-[#8B1C24] font-bold text-sm md:text-base">{quote.budgetRange || "Negotiable"}</p>
+                  </div>
+                  {quote.attachments?.length > 0 && (
+                    <div>
+                      <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Files Included</p>
+                      <p className="text-white font-bold text-sm">{quote.attachments.length} Attachment(s)</p>
+                    </div>
                   )}
                 </div>
               </div>
 
-              {quote.description && (
-                <p className="text-gray-300 text-sm line-clamp-3">
-                  {quote.description}
-                </p>
-              )}
-
-              {quote.budgetRange && (
-                <div className="text-sm">
-                  <span className="text-gray-400">Budget Range: </span>
-                  <span className="text-[#8B1C24] font-semibold">{quote.budgetRange}</span>
-                </div>
-              )}
-
-              {quote.attachments && quote.attachments.length > 0 && (
-                <div className="text-sm">
-                  <span className="text-gray-400">Attachments: </span>
-                  <span className="text-white">{quote.attachments.length} file(s)</span>
-                </div>
-              )}
-
-              <div className="flex gap-3 pt-4">
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-auto">
                 <button
                   onClick={() => downloadPDF(quote._id)}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#8B1C24] hover:bg-[#6B1520] text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-all text-sm font-semibold border border-white/10"
                 >
                   <Download size={16} />
                   Download PDF
                 </button>
                 
-                {!quote.clientApproved && (
+                {!quote.clientApproved ? (
                   <button
                     onClick={() => approveQuote(quote._id)}
                     disabled={approving === quote._id}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+                    className="flex-[1.5] flex items-center justify-center gap-2 px-4 py-3 bg-[#8B1C24] hover:bg-[#A62A32] disabled:opacity-50 text-white rounded-xl transition-all text-sm font-bold shadow-lg shadow-red-900/20"
                   >
                     {approving === quote._id ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Approving...
-                      </>
+                      <Loader2 className="animate-spin" size={18} />
                     ) : (
                       <>
-                        ✓ Approve Quote
+                        <CheckCircle2 size={18} />
+                        Approve Quote
                       </>
                     )}
                   </button>
-                )}
-                
-                {quote.clientApproved && quote.approvedAt && (
-                  <div className="text-green-400 text-sm font-medium">
-                    Approved on {new Date(quote.approvedAt).toLocaleDateString()}
+                ) : (
+                  <div className="flex-[1.5] flex items-center justify-center gap-2 px-4 py-3 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl text-sm font-bold">
+                    <CheckCircle2 size={18} />
+                    Approved {quote.approvedAt && `on ${new Date(quote.approvedAt).toLocaleDateString()}`}
                   </div>
                 )}
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

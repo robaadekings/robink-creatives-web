@@ -188,7 +188,10 @@ export default function Services() {
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
               >
-                <div className="text-center mb-4 py-4">\n                  <motion.div className="inline-flex items-center gap-3 bg-yellow-500/10 border border-yellow-500/20 px-4 py-2 rounded-full mb-6">\n                    <span className="relative flex h-2 w-2">\n                      <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-yellow-500 opacity-75"></span>\n                      <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>\n                    </span>\n                    <span className="text-yellow-400 text-sm font-medium">Admin Added Services</span>\n                  </motion.div>\n                  <h2 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-red-500 bg-clip-text text-transparent">Custom Services & Specializations</h2>\n                  <p className="text-gray-400 mt-3">Additional tailored solutions crafted by our expert team</p>\n                </div>
+                <div className="text-center mb-4 py-4">
+                   <h2 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 to-red-500 bg-clip-text text-transparent">Custom Services & Specializations</h2>
+                   <p className="text-gray-400 mt-3">Additional tailored solutions crafted by our expert team</p>
+                </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {services.map((service, index) => (

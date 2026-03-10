@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Loader2, TrendingUp, CheckCircle, AlertCircle, DollarSign } from "lucide-react"
+import { Loader2, TrendingUp, CheckCircle, AlertCircle, DollarSign, ArrowRight } from "lucide-react"
 import api from "../../utils/axios"
 
 export default function ClientDashboard() {
@@ -18,12 +18,9 @@ export default function ClientDashboard() {
         setLoading(true)
         const res = await api.get("/client/dashboard")
         
-        // DEBUG: Look at your browser console (F12) to see what is arriving
         console.log("Dashboard Raw Response:", res.data)
-
         const rawData = res.data.data || res.data
 
-        // Defensive mapping: ensures values exist even if backend keys are slightly different
         setStats({
           activeProjects: rawData.activeProjects ?? rawData.active_projects ?? 0,
           completedProjects: rawData.completedProjects ?? rawData.completed_projects ?? 0,
@@ -52,22 +49,22 @@ export default function ClientDashboard() {
 
   if (error)
     return (
-      <div className="bg-red-500/20 border border-red-500/40 text-red-200 px-6 py-4 rounded-xl">
-        <AlertCircle className="inline mr-2" size={20} />
-        {error}
+      <div className="mx-4 mt-6 bg-red-500/20 border border-red-500/40 text-red-200 px-6 py-4 rounded-xl flex items-center gap-3">
+        <AlertCircle className="flex-shrink-0" size={20} />
+        <span className="text-sm md:text-base">{error}</span>
       </div>
     )
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8 px-4 sm:px-6 lg:px-0 pb-10">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Welcome back!</h1>
-        <p className="text-gray-400 mt-2">Here's your project overview</p>
+      <div className="pt-4">
+        <h1 className="text-2xl md:text-3xl font-bold">Welcome back!</h1>
+        <p className="text-gray-400 mt-1 md:mt-2 text-sm md:text-base">Here's your project overview</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <Card
           title="Active Projects"
           value={stats.activeProjects}
@@ -95,29 +92,21 @@ export default function ClientDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-12">
-        <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          <a
+      <div className="mt-8 md:mt-12">
+        <h2 className="text-lg md:text-xl font-bold mb-4 md:mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ActionLink
             href="/client/projects"
-            className="bg-white/5 border border-white/10 hover:border-white/20 p-4 rounded-xl transition flex items-center justify-between group"
-          >
-            <div>
-              <p className="font-semibold">View Projects</p>
-              <p className="text-sm text-gray-400">Check your project status</p>
-            </div>
-            <TrendingUp size={24} className="text-gray-400 group-hover:text-white transition" />
-          </a>
-          <a
+            title="View Projects"
+            description="Check your project status"
+            icon={TrendingUp}
+          />
+          <ActionLink
             href="/client/invoices"
-            className="bg-white/5 border border-white/10 hover:border-white/20 p-4 rounded-xl transition flex items-center justify-between group"
-          >
-            <div>
-              <p className="font-semibold">View Invoices</p>
-              <p className="text-sm text-gray-400">Manage your billing</p>
-            </div>
-            <DollarSign size={24} className="text-gray-400 group-hover:text-white transition" />
-          </a>
+            title="View Invoices"
+            description="Manage your billing and payments"
+            icon={DollarSign}
+          />
         </div>
       </div>
     </div>
@@ -126,14 +115,36 @@ export default function ClientDashboard() {
 
 function Card({ title, value, icon: Icon, color }) {
   return (
-    <div className={`bg-gradient-to-br ${color} p-6 rounded-2xl shadow-lg`}>
+    <div className={`bg-gradient-to-br ${color} p-5 md:p-6 rounded-2xl shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98]`}>
       <div className="flex items-start justify-between">
-        <div>
-          <p className="text-white/80 text-sm font-medium">{title}</p>
-          <h3 className="text-3xl font-bold mt-2 text-white">{value}</h3>
+        <div className="max-w-[80%]">
+          <p className="text-white/80 text-xs md:text-sm font-medium uppercase tracking-wider">{title}</p>
+          <h3 className="text-2xl md:text-3xl font-bold mt-2 text-white truncate">{value}</h3>
         </div>
-        <Icon size={24} className="text-white/40" />
+        <div className="bg-white/20 p-2 rounded-lg">
+          <Icon size={20} className="text-white" />
+        </div>
       </div>
     </div>
+  )
+}
+
+function ActionLink({ href, title, description, icon: Icon }) {
+  return (
+    <a
+      href={href}
+      className="bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/[0.08] p-5 rounded-xl transition-all flex items-center justify-between group active:bg-white/10"
+    >
+      <div className="flex items-center gap-4">
+        <div className="hidden sm:flex bg-white/5 p-3 rounded-lg group-hover:bg-white/10 transition">
+          <Icon size={24} className="text-gray-400 group-hover:text-white" />
+        </div>
+        <div>
+          <p className="font-semibold text-white text-base md:text-lg">{title}</p>
+          <p className="text-sm text-gray-400 line-clamp-1">{description}</p>
+        </div>
+      </div>
+      <ArrowRight size={20} className="text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+    </a>
   )
 }

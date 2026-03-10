@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Loader2, Plus, Briefcase, DollarSign, Calendar, FileText, CheckCircle, X } from "lucide-react"
-import { motion } from "framer-motion"
+import { Loader2, Plus, Briefcase, DollarSign, Calendar, FileText, CheckCircle, X, ChevronRight } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import api from "../../utils/axios"
-import { Button } from "../../components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog"
-import { Input } from "../../components/ui/input"
-import { Label } from "../../components/ui/label"
-import { Textarea } from "../../components/ui/textarea"
 
 export default function ClientProjects() {
   const [projects, setProjects] = useState([])
@@ -60,185 +56,124 @@ export default function ClientProjects() {
     }
   }
 
-  if (loading) return <div className="flex justify-center items-center h-96"><Loader2 className="animate-spin text-red-500" size={32} /></div>
+  if (loading) return (
+    <div className="flex justify-center items-center h-96">
+      <Loader2 className="animate-spin text-red-500" size={32} />
+    </div>
+  )
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-6 md:space-y-8 px-2 sm:px-0 pb-10">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-white">My Projects</h2>
-          <p className="text-gray-400 mt-1">Track and manage your creative projects</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-white">My Projects</h2>
+          <p className="text-gray-400 mt-1 text-sm md:text-base">Track and manage your creative projects</p>
         </div>
 
         <Dialog open={modalOpen} onOpenChange={setModalOpen}>
           <DialogTrigger asChild>
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-[#8B1C24] hover:bg-[#A62A32] px-6 py-3 rounded-xl flex items-center gap-2 font-semibold transition text-white shadow-lg"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full sm:w-auto bg-[#8B1C24] hover:bg-[#A62A32] px-6 py-3 rounded-xl flex items-center justify-center gap-2 font-semibold transition text-white shadow-lg shadow-red-900/20"
             >
               <Plus size={20} />
               Request New Project
             </motion.button>
           </DialogTrigger>
-          <DialogContent className="bg-[#0f0f23] border border-[#8B1C24]/30 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-6 border-b border-[#8B1C24]/30">
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold text-white flex items-center">
-                  <Plus className="w-6 h-6 mr-3 text-[#8B1C24]" />
-                  Request New Project
-                </h3>
-                <button
-                  onClick={() => setModalOpen(false)}
-                  className="p-2 hover:bg-[#8B1C24]/10 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-400" />
-                </button>
-              </div>
+          
+          <DialogContent className="bg-[#0f0f23] border border-[#8B1C24]/30 p-0 sm:rounded-2xl w-[95vw] max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+            <div className="p-5 md:p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
+              <h3 className="text-xl md:text-2xl font-bold text-white flex items-center">
+                <Plus className="w-5 h-5 mr-3 text-[#8B1C24]" />
+                New Project Request
+              </h3>
+              <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+                <X size={24} />
+              </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
-                    <Briefcase className="w-4 h-4 mr-2 text-[#8B1C24]" />
-                    Project Title *
+            <form onSubmit={handleSubmit} className="p-5 md:p-6 space-y-5 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                    <Briefcase className="w-3 h-3 mr-2 text-[#8B1C24]" /> Project Title
                   </label>
                   <input
-                    type="text"
-                    required
-                    value={formData.title}
+                    type="text" required value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white placeholder-gray-500"
-                    placeholder="Enter project title"
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 focus:border-[#8B1C24] focus:outline-none text-white text-sm"
+                    placeholder="e.g. Brand Refresh 2024"
                   />
                 </div>
 
-                <div>
-                  <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
-                    <FileText className="w-4 h-4 mr-2 text-[#8B1C24]" />
-                    Service *
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                    <FileText className="w-3 h-3 mr-2 text-[#8B1C24]" /> Service
                   </label>
                   <select
-                    required
-                    value={formData.serviceId}
+                    required value={formData.serviceId}
                     onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white"
-                    disabled={servicesLoading}
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 focus:border-[#8B1C24] focus:outline-none text-white text-sm appearance-none"
                   >
-                    <option value="" className="bg-gray-800">
-                      {servicesLoading ? "Loading services..." : "Select a service"}
-                    </option>
-                    {services.map(service => (
-                      <option key={service._id} value={service._id} className="bg-gray-800">
-                        {service.title} - {service.category?.name || 'General'}
-                        {service.basePrice && ` ($${service.basePrice})`}
-                      </option>
+                    <option value="">Select a service</option>
+                    {services.map(s => (
+                      <option key={s._id} value={s._id}>{s.title}</option>
                     ))}
                   </select>
-                  {formData.serviceId && (
-                    <div className="mt-2 p-3 bg-[#8B1C24]/10 border border-[#8B1C24]/20 rounded-lg">
-                      {(() => {
-                        const selectedService = services.find(s => s._id === formData.serviceId);
-                        return selectedService ? (
-                          <div className="text-sm text-gray-300">
-                            <p className="font-medium text-white mb-1">{selectedService.title}</p>
-                            {selectedService.description && (
-                              <p className="mb-2">{selectedService.description}</p>
-                            )}
-                            <div className="flex gap-4 text-xs">
-                              {selectedService.basePrice && (
-                                <span className="text-green-400">Price: ${selectedService.basePrice}</span>
-                              )}
-                              {selectedService.deliveryTime && (
-                                <span className="text-blue-400">Delivery: {selectedService.deliveryTime}</span>
-                              )}
-                            </div>
-                            {selectedService.features && selectedService.features.length > 0 && (
-                              <div className="mt-2">
-                                <p className="text-xs text-gray-400 mb-1">Features:</p>
-                                <ul className="text-xs space-y-1">
-                                  {selectedService.features.slice(0, 3).map((feature, idx) => (
-                                    <li key={idx} className="flex items-center">
-                                      <span className="text-[#8B1C24] mr-1">•</span>
-                                      {feature}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </div>
-                        ) : null;
-                      })()}
-                    </div>
-                  )}
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
-                    <DollarSign className="w-4 h-4 mr-2 text-green-400" />
-                    Budget Estimate
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                    <DollarSign className="w-3 h-3 mr-2 text-green-500" /> Budget
                   </label>
                   <input
-                    type="number"
-                    value={formData.budget}
+                    type="number" value={formData.budget}
                     onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white placeholder-gray-500"
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 focus:border-[#8B1C24] focus:outline-none text-white text-sm"
                     placeholder="0.00"
                   />
                 </div>
 
-                <div>
-                  <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-blue-400" />
-                    Preferred Deadline
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                    <Calendar className="w-3 h-3 mr-2 text-blue-500" /> Deadline
                   </label>
                   <input
-                    type="date"
-                    value={formData.deadline}
+                    type="date" value={formData.deadline}
                     onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white"
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 focus:border-[#8B1C24] focus:outline-none text-white text-sm"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
-                  <FileText className="w-4 h-4 mr-2 text-orange-400" />
-                  Project Description
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                  <FileText className="w-3 h-3 mr-2 text-orange-500" /> Description
                 </label>
                 <textarea
-                  rows="4"
-                  value={formData.description}
+                  rows="4" value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white resize-none placeholder-gray-500"
-                  placeholder="Describe your project requirements, goals, and any specific details..."
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 focus:border-[#8B1C24] focus:outline-none text-white text-sm resize-none"
+                  placeholder="Tell us about your requirements..."
                 />
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
                 <button
-                  type="button"
-                  onClick={() => setModalOpen(false)}
-                  className="flex-1 py-3 px-6 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-700 transition-all duration-300"
+                  type="button" onClick={() => setModalOpen(false)}
+                  className="flex-1 py-3 px-6 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 transition-all"
                 >
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  disabled={submitting}
-                  className="flex-1 py-3 px-6 rounded-xl bg-[#8B1C24] text-white font-semibold hover:bg-[#A62A32] transition-all duration-300 disabled:opacity-50 flex items-center justify-center"
+                  type="submit" disabled={submitting}
+                  className="flex-1 py-3 px-6 rounded-xl bg-[#8B1C24] text-white font-bold hover:bg-[#A62A32] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {submitting ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      Submit Request
-                    </>
-                  )}
+                  {submitting ? <Loader2 className="animate-spin" size={20} /> : <><CheckCircle size={20} /> Request Project</>}
                 </button>
               </div>
             </form>
@@ -246,71 +181,70 @@ export default function ClientProjects() {
         </Dialog>
       </div>
 
+      {/* Projects Grid */}
       {projects.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center py-16"
-        >
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-12 max-w-md mx-auto">
-            <Briefcase className="mx-auto text-gray-500 mb-4" size={48} />
-            <h3 className="text-xl font-semibold text-white mb-2">No Projects Yet</h3>
-            <p className="text-gray-400 mb-6">Start your creative journey by requesting your first project!</p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setModalOpen(true)}
-              className="bg-[#8B1C24] hover:bg-[#A62A32] px-6 py-3 rounded-xl text-white font-semibold transition"
-            >
-              Request New Project
-            </motion.button>
-          </div>
-        </motion.div>
+        <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10 px-4">
+          <Briefcase className="mx-auto text-gray-600 mb-4" size={48} />
+          <h3 className="text-xl font-bold text-white">No projects found</h3>
+          <p className="text-gray-400 mt-2 max-w-sm mx-auto">You haven't requested any projects yet. Click the button above to get started.</p>
+        </div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {projects.map(project => (
             <motion.div
               key={project._id}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ y: -4 }}
               onClick={() => navigate(`/client/projects/${project._id}`)}
-              className="bg-white/5 border border-white/10 p-6 rounded-2xl cursor-pointer hover:bg-white/10 transition-all duration-300 hover:border-[#8B1C24]/30"
+              className="group bg-white/5 border border-white/10 p-5 md:p-6 rounded-2xl cursor-pointer hover:bg-white/[0.08] hover:border-[#8B1C24]/40 transition-all flex flex-col justify-between"
             >
-              <h3 className="font-semibold text-lg text-white">{project.title}</h3>
-              <p className="text-gray-400 text-sm mt-2">
-                Status: <span className="capitalize font-medium text-red-400">{project.status}</span>
-              </p>
+              <div>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-lg text-white group-hover:text-red-400 transition-colors line-clamp-1">{project.title}</h3>
+                  <ChevronRight size={20} className="text-gray-600 group-hover:text-white transition-all" />
+                </div>
+                
+                <div className="flex items-center gap-2 mb-4">
+                  <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest ${
+                    project.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+                  }`}>
+                    {project.status}
+                  </span>
+                  {project.deadline && (
+                    <span className="text-[10px] text-gray-500 font-medium">
+                      Due: {new Date(project.deadline).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
 
-              {project.description && (
-                <p className="text-gray-500 text-sm mt-3 line-clamp-2">{project.description}</p>
-              )}
-
-              {project.deadline && (
-                <p className="text-gray-500 text-xs mt-3">
-                  Deadline: {new Date(project.deadline).toLocaleDateString()}
-                </p>
-              )}
+                {project.description && (
+                  <p className="text-gray-400 text-sm line-clamp-2 mb-6 leading-relaxed">
+                    {project.description}
+                  </p>
+                )}
+              </div>
 
               <ProgressBar value={project.progress || 0} />
             </motion.div>
           ))}
         </div>
       )}
-
     </div>
   )
 }
 
 function ProgressBar({ value }) {
   return (
-    <div className="mt-4">
-      <div className="flex justify-between text-xs text-gray-400 mb-2">
-        <span>Progress</span>
-        <span>{value}%</span>
+    <div className="space-y-2">
+      <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+        <span className="text-gray-500">Project Progress</span>
+        <span className="text-red-500">{value}%</span>
       </div>
-      <div className="w-full bg-white/10 rounded-full h-2">
-        <div
-          className="bg-gradient-to-r from-red-600 to-red-700 h-2 rounded-full transition-all"
-          style={{ width: `${value}%` }}
+      <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${value}%` }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="bg-gradient-to-r from-[#8B1C24] to-[#ff4d5a] h-full rounded-full shadow-[0_0_10px_rgba(139,28,36,0.5)]"
         />
       </div>
     </div>
