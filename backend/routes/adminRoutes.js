@@ -9,8 +9,6 @@ const notif = require("../controllers/adminNotificationController");
 const adminController = require("../controllers/adminController");
 const projectController = require("../controllers/projectController");
 
-
-
 // =====================
 // Dashboard Stats
 // =====================
@@ -20,7 +18,6 @@ router.get(
   role("admin", "superadmin"),
   dashboard.getDashboardStats
 );
-
 
 // =====================
 // Charts
@@ -59,6 +56,15 @@ router.get(
 // =====================
 // Projects Management
 // =====================
+
+// NEW: Create a new project (Handles the POST request)
+router.post(
+  "/projects",
+  authMiddleware,
+  role("admin", "superadmin"),
+  projectController.createProject
+);
+
 router.get(
   "/projects",
   authMiddleware,
@@ -147,6 +153,5 @@ router.patch(
   role("admin", "superadmin"),
   adminController.promoteToAdmin
 );
-
 
 module.exports = router;

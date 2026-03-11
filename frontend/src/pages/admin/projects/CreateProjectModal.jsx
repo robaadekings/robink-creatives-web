@@ -5,7 +5,7 @@ import api from "../../../utils/axios"
 
 export default function CreateProjectModal({ open, onClose, clients, refresh }) {
   const [form, setForm] = useState({
-    name: "",
+    title: "", // Fixed: changed from 'name' to 'title'
     clientId: "",
     serviceId: "",
     budget: "",
@@ -39,11 +39,21 @@ export default function CreateProjectModal({ open, onClose, clients, refresh }) 
     e.preventDefault()
     setLoading(true)
     try {
-      await api.post("/admin/projects", form)
+      // Syncing payload with backend expectations
+      const payload = {
+        ...form,
+        budget: form.budget ? Number(form.budget) : 0
+      }
+
+      await api.post("/admin/projects", payload)
+      
+      // Basic success feedback
+      alert("Project created successfully!")
+      
       refresh()
       onClose()
       setForm({
-        name: "",
+        title: "",
         clientId: "",
         serviceId: "",
         budget: "",
@@ -53,6 +63,7 @@ export default function CreateProjectModal({ open, onClose, clients, refresh }) 
       })
     } catch (err) {
       console.error("Create project error:", err)
+      alert(err.response?.data?.message || "Failed to create project")
     } finally {
       setLoading(false)
     }
@@ -88,15 +99,15 @@ export default function CreateProjectModal({ open, onClose, clients, refresh }) 
             <div>
               <label className="block mb-3 text-sm font-medium text-gray-300 flex items-center">
                 <Briefcase className="w-4 h-4 mr-2 text-[#8B1C24]" />
-                Project Name *
+                Project Title *
               </label>
               <input
                 type="text"
                 required
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white"
-                placeholder="Enter project name"
+                placeholder="Enter project title"
               />
             </div>
 
@@ -130,47 +141,10 @@ export default function CreateProjectModal({ open, onClose, clients, refresh }) 
               </option>
               {services.map(service => (
                 <option key={service._id} value={service._id}>
-                  {service.title} - {service.category?.name || 'General'}
-                  {service.basePrice && ` ($${service.basePrice})`}
+                  {service.title}
                 </option>
               ))}
             </select>
-            {form.serviceId && (
-              <div className="mt-2 p-3 bg-[#8B1C24]/10 border border-[#8B1C24]/20 rounded-lg">
-                {(() => {
-                  const selectedService = services.find(s => s._id === form.serviceId);
-                  return selectedService ? (
-                    <div className="text-sm text-gray-300">
-                      <p className="font-medium text-white mb-1">{selectedService.title}</p>
-                      {selectedService.description && (
-                        <p className="mb-2">{selectedService.description}</p>
-                      )}
-                      <div className="flex gap-4 text-xs">
-                        {selectedService.basePrice && (
-                          <span className="text-green-400">Price: ${selectedService.basePrice}</span>
-                        )}
-                        {selectedService.deliveryTime && (
-                          <span className="text-blue-400">Delivery: {selectedService.deliveryTime}</span>
-                        )}
-                      </div>
-                      {selectedService.features && selectedService.features.length > 0 && (
-                        <div className="mt-2">
-                          <p className="text-xs text-gray-400 mb-1">Features:</p>
-                          <ul className="text-xs space-y-1">
-                            {selectedService.features.slice(0, 3).map((feature, idx) => (
-                              <li key={idx} className="flex items-center">
-                                <span className="text-[#8B1C24] mr-1">•</span>
-                                {feature}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  ) : null;
-                })()}
-              </div>
-            )}
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -212,7 +186,7 @@ export default function CreateProjectModal({ open, onClose, clients, refresh }) 
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className="w-full px-4 py-3 rounded-xl bg-black/40 border border-gray-700 focus:border-[#8B1C24] focus:outline-none transition-all duration-300 focus:ring-2 focus:ring-[#8B1C24]/20 text-white resize-none"
-              placeholder="Describe the project requirements, goals, and any specific details..."
+              placeholder="Describe requirements..."
             />
           </div>
 
@@ -220,14 +194,14 @@ export default function CreateProjectModal({ open, onClose, clients, refresh }) 
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-6 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-700 transition-all duration-300"
+              className="flex-1 py-3 px-6 rounded-xl border border-gray-600 text-gray-300 hover:bg-gray-700 transition-all"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-3 px-6 rounded-xl bg-[#8B1C24] text-white font-semibold hover:bg-[#A62A32] transition-all duration-300 disabled:opacity-50 flex items-center justify-center"
+              className="flex-1 py-3 px-6 rounded-xl bg-[#8B1C24] text-white font-semibold hover:bg-[#A62A32] transition-all disabled:opacity-50 flex items-center justify-center"
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
