@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
-import { Menu, X, Facebook, Linkedin, Github, MessageCircle, ArrowRight, ChevronUp } from "lucide-react"
+import { Menu, X, Facebook, Linkedin, Github, MessageCircle, ChevronUp } from "lucide-react"
 import logo from "../assets/robink-logo.png"
 
 export default function PublicLayout() {
@@ -37,9 +37,9 @@ export default function PublicLayout() {
   return (
     <div className="dark min-h-screen flex flex-col bg-[#0a0e14] text-white overflow-x-hidden relative selection:bg-red-500/30 font-sans">
       
-      {/* Scroll Progress Bar */}
+      {/* Scroll Progress Bar - Changed to solid color to remove "grid/border" look at top */}
       <div
-        className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-red-600 via-yellow-500 to-red-600 z-[100] transition-all duration-150"
+        className="fixed top-0 left-0 h-[2px] bg-red-600 z-[100] transition-all duration-150"
         style={{ width: `${scrollProgress}%` }}
       />
 
@@ -80,7 +80,7 @@ export default function PublicLayout() {
           </button>
         </div>
 
-        {/* MOBILE MENU - Fixed background to match brand color regardless of scroll position */}
+        {/* MOBILE MENU - Uses solid brand background */}
         <div 
           className={`fixed inset-0 md:hidden bg-[#0a0e14] transition-all duration-500 ease-in-out z-50 ${
             mobileOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
@@ -114,13 +114,13 @@ export default function PublicLayout() {
         <Outlet />
       </main>
 
-      {/* MINIMAL FOOTER */}
+      {/* MINIMAL FOOTER - Removed Links Section completely */}
       <footer className="relative z-20 bg-[#070a0f] border-t border-white/5 pt-16 pb-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center md:items-start mb-12">
             
             {/* Column 1: Logo & Socials */}
-            <div className="flex flex-col items-center sm:items-start space-y-6">
+            <div className="flex flex-col items-center md:items-start space-y-6">
               <img src={logo} alt="Robink Creatives" className="h-10 md:h-12 object-contain" />
               <div className="flex gap-3">
                 <SocialIcon icon={<Linkedin size={18} />} href="https://linkedin.com/company/robink-creatives" bg="bg-[#0A66C2]" />
@@ -129,27 +129,18 @@ export default function PublicLayout() {
               </div>
             </div>
 
-            {/* Column 2: Contact */}
-            <div className="text-center sm:text-left">
-              <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Get in Touch</h4>
-              <div className="space-y-4 text-sm text-gray-400">
-                <p>Email: <a href="mailto:info@robinkcreatives.com" className="text-white hover:text-red-500 transition-colors">info@robinkcreatives.com</a></p>
-                <p>Phone: <a href="tel:+254769505060" className="text-white hover:text-red-500 transition-colors">+254 769 505 060</a></p>
-                <p>Office: Nairobi, Kenya</p>
-              </div>
-            </div>
-
-            {/* Column 3: Legal Links */}
-            <div className="text-center sm:text-left">
-              <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Links</h4>
-              <div className="flex flex-col gap-4 text-sm text-gray-400">
-                <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-                <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            {/* Column 2: Contact Only */}
+            <div className="text-center md:text-right">
+              <h4 className="text-white font-bold mb-4 uppercase tracking-widest text-xs">Get in Touch</h4>
+              <div className="space-y-2 text-sm text-gray-400">
+                <p><a href="mailto:info@robinkcreatives.com" className="text-white hover:text-red-500 transition-colors">info@robinkcreatives.com</a></p>
+                <p>+254 769 505 060</p>
+                <p>Nairobi, Kenya</p>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+          <div className="border-t border-white/5 pt-8 text-center md:text-left">
             <p className="text-gray-500 text-[10px] sm:text-xs">
               © {new Date().getFullYear()} Robink Creatives. All rights reserved.
             </p>
