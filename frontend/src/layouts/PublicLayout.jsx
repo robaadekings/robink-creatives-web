@@ -37,7 +37,7 @@ export default function PublicLayout() {
   return (
     <div className="dark min-h-screen flex flex-col bg-[#0a0e14] text-white overflow-x-hidden relative selection:bg-red-500/30 font-sans">
       
-      {/* Scroll Progress Bar - Changed to solid color to remove "grid/border" look at top */}
+      {/* Scroll Progress Bar */}
       <div
         className="fixed top-0 left-0 h-[2px] bg-red-600 z-[100] transition-all duration-150"
         style={{ width: `${scrollProgress}%` }}
@@ -46,7 +46,7 @@ export default function PublicLayout() {
       {/* NAVBAR */}
       <header 
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-          isScrolled 
+          isScrolled || mobileOpen
           ? "py-3 bg-[#0a0e14] border-b border-white/5 shadow-xl" 
           : "py-5 bg-transparent"
         }`}
@@ -80,7 +80,7 @@ export default function PublicLayout() {
           </button>
         </div>
 
-        {/* MOBILE MENU - Uses solid brand background */}
+        {/* MOBILE MENU */}
         <div 
           className={`fixed inset-0 md:hidden bg-[#0a0e14] transition-all duration-500 ease-in-out z-50 ${
             mobileOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
@@ -114,7 +114,7 @@ export default function PublicLayout() {
         <Outlet />
       </main>
 
-      {/* MINIMAL FOOTER - Removed Links Section completely */}
+      {/* MINIMAL FOOTER */}
       <footer className="relative z-20 bg-[#070a0f] border-t border-white/5 pt-16 pb-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center md:items-start mb-12">
