@@ -60,7 +60,7 @@ export default function ClientDashboard() {
       {/* Header */}
       <div className="pt-4">
         <h1 className="text-2xl md:text-3xl font-bold">Welcome back!</h1>
-        <p className="text-gray-400 mt-1 md:mt-2 text-sm md:text-base">Here's your project overview</p>
+        <p className="text-gray-400 mt-1 md:mt-2 text-sm md:text-base">Here is your project overview</p>
       </div>
 
       {/* Stats Grid */}
