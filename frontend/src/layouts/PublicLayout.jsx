@@ -114,36 +114,61 @@ export default function PublicLayout() {
         <Outlet />
       </main>
 
-      {/* MINIMAL FOOTER */}
-      <footer className="relative z-20 bg-[#070a0f] border-t border-white/5 pt-16 pb-10">
+      {/* PREMIUM FOOTER */}
+      <footer className="relative z-20 bg-[#070a0f] border-t border-white/5 pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center md:items-start mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
             
-            {/* Column 1: Logo & Socials */}
+            {/* Column 1: Brand & Identity */}
             <div className="flex flex-col items-center md:items-start space-y-6">
               <img src={logo} alt="Robink Creatives" className="h-10 md:h-12 object-contain" />
+              <p className="text-gray-400 text-sm leading-relaxed text-center md:text-left max-w-xs">
+                Elevating digital experiences through innovative design and strategic creativity.
+              </p>
               <div className="flex gap-3">
-                <SocialIcon icon={<Linkedin size={18} />} href="https://linkedin.com/company/robink-creatives" bg="bg-[#0A66C2]" />
-                <SocialIcon icon={<Facebook size={18} />} href="https://facebook.com/robinkcreatives" bg="bg-[#1877F2]" />
-                <SocialIcon icon={<Github size={18} />} href="https://github.com/robinkcreatives" bg="bg-gray-800" />
+                <SocialIcon icon={<Linkedin size={18} />} href="https://linkedin.com/company/robink-creatives" bg="bg-white/5 hover:bg-[#0A66C2]" />
+                <SocialIcon icon={<Facebook size={18} />} href="https://facebook.com/robinkcreatives" bg="bg-white/5 hover:bg-[#1877F2]" />
+                <SocialIcon icon={<Github size={18} />} href="https://github.com/robinkcreatives" bg="bg-white/5 hover:bg-gray-800" />
               </div>
             </div>
 
-            {/* Column 2: Contact Only */}
-            <div className="text-center md:text-right">
-              <h4 className="text-white font-bold mb-4 uppercase tracking-widest text-xs">Get in Touch</h4>
-              <div className="space-y-2 text-sm text-gray-400">
-                <p><a href="mailto:info@robinkcreatives.com" className="text-white hover:text-red-500 transition-colors">info@robinkcreatives.com</a></p>
-                <p>+254 769 505 060</p>
-                <p>Nairobi, Kenya</p>
+            {/* Column 2: Quick Links (Desktop Only) */}
+            <div className="hidden md:flex flex-col items-center">
+              <div className="text-left">
+                <h4 className="text-white font-bold mb-6 uppercase tracking-[0.2em] text-[10px]">Links</h4>
+                <ul className="space-y-4 text-sm text-gray-400">
+                  <li><Link to="/" className="hover:text-red-500 transition-colors">Home</Link></li>
+                  <li><Link to="/about" className="hover:text-red-500 transition-colors">About</Link></li>
+                  <li><Link to="/services" className="hover:text-red-500 transition-colors">Services</Link></li>
+                  <li><Link to="/portfolio" className="hover:text-red-500 transition-colors">Portfolio</Link></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Column 3: Contact Details */}
+            <div className="flex flex-col items-center md:items-end">
+              <div className="text-center md:text-right">
+                <h4 className="text-white font-bold mb-6 uppercase tracking-[0.2em] text-[10px]">Get in Touch</h4>
+                <div className="space-y-4 text-sm text-gray-400">
+                  <a href="mailto:info@robinkcreatives.com" className="block text-white hover:text-red-500 transition-colors">
+                    info@robinkcreatives.com
+                  </a>
+                  <p className="hover:text-white transition-colors cursor-default">+254 769 505 060</p>
+                  <p className="hover:text-white transition-colors cursor-default">Nairobi, Kenya</p>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-white/5 pt-8 text-center md:text-left">
-            <p className="text-gray-500 text-[10px] sm:text-xs">
-              © {new Date().getFullYear()} Robink Creatives. All rights reserved.
+          {/* Bottom Bar */}
+          <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-500 text-[10px] sm:text-xs tracking-wider">
+              © {new Date().getFullYear()} ROBINK CREATIVES. ALL RIGHTS RESERVED.
             </p>
+            <div className="flex gap-6 text-[10px] text-gray-500 uppercase tracking-widest">
+              <span className="hover:text-white cursor-pointer transition-colors">Privacy</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Terms</span>
+            </div>
           </div>
         </div>
       </footer>
@@ -197,7 +222,7 @@ function SocialIcon({ icon, href, bg }) {
       href={href} 
       target="_blank" 
       rel="noopener noreferrer" 
-      className={`p-2.5 rounded-xl text-white ${bg} hover:scale-110 transition-transform shadow-lg flex items-center justify-center`}
+      className={`p-2.5 rounded-xl text-white transition-all duration-300 shadow-lg flex items-center justify-center border border-white/5 ${bg}`}
     >
       {icon}
     </a>
