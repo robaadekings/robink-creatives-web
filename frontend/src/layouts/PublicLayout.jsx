@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom"
 import { useEffect, useState } from "react"
-import { Menu, X, Facebook, Linkedin, Github, MessageCircle, ChevronUp } from "lucide-react"
+import { Menu, X, Facebook, Linkedin, Github, MessageCircle, ChevronUp, Mail, Phone, MapPin } from "lucide-react"
 import logo from "../assets/robink-logo.png"
 
 export default function PublicLayout() {
@@ -47,7 +47,7 @@ export default function PublicLayout() {
       <header 
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
           isScrolled || mobileOpen
-          ? "py-3 bg-[#0a0e14] border-b border-white/5 shadow-xl" 
+          ? "py-3 bg-[#0a0e14]/80 backdrop-blur-lg border-b border-white/5 shadow-xl" 
           : "py-5 bg-transparent"
         }`}
       >
@@ -114,36 +114,60 @@ export default function PublicLayout() {
         <Outlet />
       </main>
 
-      {/* MINIMAL FOOTER */}
-      <footer className="relative z-20 bg-[#070a0f] border-t border-white/5 pt-16 pb-10">
+      {/* PREMIUM MINIMAL FOOTER */}
+      <footer className="relative z-20 bg-[#070a0f] border-t border-white/5 pt-20 pb-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center md:items-start mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
             
-            {/* Column 1: Logo & Socials */}
-            <div className="flex flex-col items-center md:items-start space-y-6">
-              <img src={logo} alt="Robink Creatives" className="h-10 md:h-12 object-contain" />
-              <div className="flex gap-3">
-                <SocialIcon icon={<Linkedin size={18} />} href="https://linkedin.com/company/robink-creatives" bg="bg-[#0A66C2]" />
-                <SocialIcon icon={<Facebook size={18} />} href="https://facebook.com/robinkcreatives" bg="bg-[#1877F2]" />
-                <SocialIcon icon={<Github size={18} />} href="https://github.com/robinkcreatives" bg="bg-gray-800" />
+            {/* Brand Section */}
+            <div className="md:col-span-5 flex flex-col items-center md:items-start">
+              <img src={logo} alt="Robink Creatives" className="h-12 mb-6 object-contain opacity-90" />
+              <p className="text-gray-400 text-sm leading-relaxed max-w-sm text-center md:text-left">
+                Crafting digital experiences that merge creativity with technical excellence. Join us in shaping the future of design.
+              </p>
+              <div className="flex gap-4 mt-8">
+                <SocialIcon icon={<Linkedin size={18} />} href="https://linkedin.com/company/robink-creatives" />
+                <SocialIcon icon={<Facebook size={18} />} href="https://facebook.com/robinkcreatives" />
+                <SocialIcon icon={<Github size={18} />} href="https://github.com/robinkcreatives" />
               </div>
             </div>
 
-            {/* Column 2: Contact Only */}
-            <div className="text-center md:text-right">
-              <h4 className="text-white font-bold mb-4 uppercase tracking-widest text-xs">Get in Touch</h4>
-              <div className="space-y-2 text-sm text-gray-400">
-                <p><a href="mailto:info@robinkcreatives.com" className="text-white hover:text-red-500 transition-colors">info@robinkcreatives.com</a></p>
-                <p>+254 769 505 060</p>
-                <p>Nairobi, Kenya</p>
+            {/* Quick Links Section */}
+            <div className="md:col-span-3 text-center md:text-left">
+              <h4 className="text-white font-semibold mb-6 text-sm uppercase tracking-[0.2em]">Navigation</h4>
+              <ul className="space-y-4 text-sm text-gray-400">
+                <li><Link to="/about" className="hover:text-red-500 transition-colors">Our Story</Link></li>
+                <li><Link to="/services" className="hover:text-red-500 transition-colors">Services</Link></li>
+                <li><Link to="/portfolio" className="hover:text-red-500 transition-colors">Work</Link></li>
+                <li><Link to="/portal/login" className="hover:text-red-500 transition-colors">Partner Portal</Link></li>
+              </ul>
+            </div>
+
+            {/* Contact Section */}
+            <div className="md:col-span-4 text-center md:text-left">
+              <h4 className="text-white font-semibold mb-6 text-sm uppercase tracking-[0.2em]">Contact</h4>
+              <div className="space-y-4 text-sm text-gray-400">
+                <a href="mailto:info@robinkcreatives.com" className="flex items-center justify-center md:justify-start gap-3 hover:text-white transition-colors">
+                  <Mail size={16} className="text-red-600" /> info@robinkcreatives.com
+                </a>
+                <p className="flex items-center justify-center md:justify-start gap-3">
+                  <Phone size={16} className="text-red-600" /> +254 769 505 060
+                </p>
+                <p className="flex items-center justify-center md:justify-start gap-3">
+                  <MapPin size={16} className="text-red-600" /> Nairobi, Kenya
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-white/5 pt-8 text-center md:text-left">
-            <p className="text-gray-500 text-[10px] sm:text-xs">
+          <div className="border-t border-white/[0.03] pt-10 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-500 text-[11px] tracking-wider uppercase">
               © {new Date().getFullYear()} Robink Creatives. All rights reserved.
             </p>
+            <div className="flex gap-8 text-[11px] text-gray-500 uppercase tracking-widest">
+              <a href="#" className="hover:text-white transition-colors">Privacy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms</a>
+            </div>
           </div>
         </div>
       </footer>
@@ -152,7 +176,7 @@ export default function PublicLayout() {
       <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60] flex flex-col gap-3">
         <button
           onClick={scrollToTop}
-          className={`p-3 sm:p-4 bg-white/10 backdrop-blur-md border border-white/10 text-white rounded-full shadow-2xl transition-all duration-500 hover:bg-white/20 hover:scale-110 active:scale-95 ${
+          className={`p-3 sm:p-4 bg-white/5 backdrop-blur-xl border border-white/10 text-white rounded-full shadow-2xl transition-all duration-500 hover:bg-white/10 hover:scale-110 active:scale-95 ${
             showBackToTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
           }`}
           aria-label="Back to Top"
@@ -191,13 +215,13 @@ function NavItem({ to, children }) {
   )
 }
 
-function SocialIcon({ icon, href, bg }) {
+function SocialIcon({ icon, href }) {
   return (
     <a 
       href={href} 
       target="_blank" 
       rel="noopener noreferrer" 
-      className={`p-2.5 rounded-xl text-white ${bg} hover:scale-110 transition-transform shadow-lg flex items-center justify-center`}
+      className="p-3 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-red-500/50 hover:bg-red-500/10 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center"
     >
       {icon}
     </a>
