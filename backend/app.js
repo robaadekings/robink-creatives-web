@@ -17,16 +17,25 @@ const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 
+// 🔹 Helmet for security headers
 app.use(helmet());
-app.use(
-  cors({
-    origin: "https://robink-creatives-web.vercel.app",
-    credentials: true,
-  })
-);
+
+// 🔹 Proper CORS setup for your frontend
+const corsOptions = {
+  origin: "https://robink-creatives-web.vercel.app", // exact frontend origin
+  credentials: true, // allow cookies/credentials
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // required headers
+};
+
+app.use(cors(corsOptions));         // apply to all requests
+app.options("*", cors(corsOptions)); // handle preflight OPTIONS requests
+
+// 🔹 Logging & parsing
 app.use(morgan('dev'));
 app.use(express.json());
 
+// 🔹 Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/portfolios', portfolioRoutes);
@@ -39,6 +48,7 @@ app.use('/api/client', clientRoutes);
 app.use('/api/service-categories', serviceCategoryRoutes);
 app.use("/api/contact", contactRoutes);
 
+// 🔹 Error middleware
 app.use(errorMiddleware);
 
 module.exports = app;
