@@ -29,7 +29,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));         // apply to all requests
-app.options("*", cors(corsOptions)); // handle preflight OPTIONS requests
 
 // 🔹 Logging & parsing
 app.use(morgan('dev'));
